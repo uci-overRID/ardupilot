@@ -82,6 +82,9 @@
 
 #include <AP_IBus_Telem/AP_IBus_Telem.h>
 
+
+#include <AP_ODIDScanner/AP_ODIDScanner.h>
+
 class AP_DDS_Client;
 
 class AP_Vehicle : public AP_HAL::HAL::Callbacks {
@@ -411,6 +414,8 @@ protected:
 #if AP_OPENDRONEID_ENABLED
     AP_OpenDroneID opendroneid;
 #endif
+
+    AP_ODIDScanner odidscanner;
 
 #if HAL_MSP_ENABLED
     AP_MSP msp;
