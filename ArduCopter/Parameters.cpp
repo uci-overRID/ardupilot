@@ -451,9 +451,9 @@ const AP_Param::Info Copter::var_info[] = {
 #endif
 
 #if AP_RELAY_ENABLED
-    // @Group: RELAY_
+    // @Group: RELAY
     // @Path: ../libraries/AP_Relay/AP_Relay.cpp
-    GOBJECT(relay,                  "RELAY_", AP_Relay),
+    GOBJECT(relay,                  "RELAY", AP_Relay),
 #endif
 
 #if PARACHUTE == ENABLED
@@ -498,11 +498,7 @@ const AP_Param::Info Copter::var_info[] = {
 
     // @Group: ATC_
     // @Path: ../libraries/AC_AttitudeControl/AC_AttitudeControl.cpp,../libraries/AC_AttitudeControl/AC_AttitudeControl_Multi.cpp,../libraries/AC_AttitudeControl/AC_AttitudeControl_Heli.cpp
-#if FRAME_CONFIG == HELI_FRAME
-    GOBJECTPTR(attitude_control, "ATC_", AC_AttitudeControl_Heli),
-#else
-    GOBJECTPTR(attitude_control, "ATC_", AC_AttitudeControl_Multi),
-#endif
+    GOBJECTVARPTR(attitude_control, "ATC_", &copter.attitude_control_var_info),
 
     // @Group: PSC
     // @Path: ../libraries/AC_AttitudeControl/AC_PosControl.cpp
@@ -700,6 +696,20 @@ const AP_Param::Info Copter::var_info[] = {
     // @Values: 0:Stopped,1:Running
     // @User: Standard
     GSCALAR(throw_motor_start, "THROW_MOT_START", (float)ModeThrow::PreThrowMotorState::STOPPED),
+
+    // @Param: THROW_ALT_MIN
+    // @DisplayName: Throw mode minimum altitude
+    // @Description: Minimum altitude above which Throw mode will detect a throw or a drop - 0 to disable the check
+    // @Units: m
+    // @User: Advanced
+    GSCALAR(throw_altitude_min, "THROW_ALT_MIN", 0),
+
+    // @Param: THROW_ALT_MAX
+    // @DisplayName: Throw mode maximum altitude
+    // @Description: Maximum altitude under which Throw mode will detect a throw or a drop - 0 to disable the check
+    // @Units: m
+    // @User: Advanced
+    GSCALAR(throw_altitude_max, "THROW_ALT_MAX", 0),
 #endif
 
 #if OSD_ENABLED || OSD_PARAM_ENABLED

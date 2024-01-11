@@ -1124,9 +1124,12 @@ class AutoTestPlane(vehicle_test_suite.TestSuite):
 
     def TestRCRelay(self):
         '''Test Relay RC Channel Option'''
-        self.set_parameter("RC12_OPTION", 28) # Relay On/Off
+        self.set_parameters({
+            "RELAY1_FUNCTION": 1, # Enable relay as a standard relay pin
+            "RC12_OPTION": 28 # Relay On/Off
+        })
         self.set_rc(12, 1000)
-        self.reboot_sitl() # needed for RC12_OPTION to take effect
+        self.reboot_sitl() # needed for RC12_OPTION and RELAY1_FUNCTION to take effect
 
         off = self.get_parameter("SIM_PIN_MASK")
         if off:
@@ -3160,7 +3163,7 @@ class AutoTestPlane(vehicle_test_suite.TestSuite):
 
     def fly_external_AHRS(self, sim, eahrs_type, mission):
         """Fly with external AHRS (VectorNav)"""
-        self.customise_SITL_commandline(["--uartE=sim:%s" % sim])
+        self.customise_SITL_commandline(["--serial4=sim:%s" % sim])
 
         self.set_parameters({
             "EAHRS_TYPE": eahrs_type,
@@ -3274,6 +3277,14 @@ class AutoTestPlane(vehicle_test_suite.TestSuite):
     def MicroStrainEAHRS5(self):
         '''Test MicroStrain EAHRS series 5 support'''
         self.fly_external_AHRS("MicroStrain5", 2, "ap1.txt")
+
+    def MicroStrainEAHRS7(self):
+        '''Test MicroStrain EAHRS series 7 support'''
+        self.fly_external_AHRS("MicroStrain7", 7, "ap1.txt")
+
+    def InertialLabsEAHRS(self):
+        '''Test InertialLabs EAHRS support'''
+        self.fly_external_AHRS("ILabs", 5, "ap1.txt")
 
     def get_accelvec(self, m):
         return Vector3(m.xacc, m.yacc, m.zacc) * 0.001 * 9.81
@@ -4210,7 +4221,7 @@ class AutoTestPlane(vehicle_test_suite.TestSuite):
         })
 
         self.customise_SITL_commandline(
-            ["--uartF=sim:%s" % sim_name,
+            ["--serial5=sim:%s" % sim_name,
              ],
         )
         self.wait_ready_to_arm()
@@ -4511,7 +4522,7 @@ class AutoTestPlane(vehicle_test_suite.TestSuite):
         self.customise_SITL_commandline(
             [],
             model=model,
-            defaults_filepath="",
+            defaults_filepath="Tools/autotest/models/plane-3d.parm",
             wipe=True)
 
         self.context_push()
@@ -5353,6 +5364,8 @@ class AutoTestPlane(vehicle_test_suite.TestSuite):
             self.TerrainLoiter,
             self.VectorNavEAHRS,
             self.MicroStrainEAHRS5,
+            self.MicroStrainEAHRS7,
+            self.InertialLabsEAHRS,
             self.Deadreckoning,
             self.DeadreckoningNoAirSpeed,
             self.EKFlaneswitch,

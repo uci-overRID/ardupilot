@@ -103,6 +103,9 @@ void AP_Mount_Siyi::update()
     // run zoom control
     update_zoom_control();
 
+    // change to RC_TARGETING mode if RC input has changed
+    set_rctargeting_on_rcinput_change();
+
     // Get the target angles or rates first depending on the current mount mode
     switch (get_mode()) {
         case MAV_MOUNT_MODE_RETRACT: {
@@ -479,6 +482,8 @@ void AP_Mount_Siyi::process_packet()
                     sev = MAV_SEVERITY_WARNING;
                     break;
             }
+            (void)msg;  // in case GCS_SEND_TEXT not available
+            (void)sev;  // in case GCS_SEND_TEXT not available
             GCS_SEND_TEXT(sev, "Siyi: recording %s", msg);
         }
 
