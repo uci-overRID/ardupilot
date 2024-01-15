@@ -65,6 +65,7 @@
 #include <AP_VisualOdom/AP_VisualOdom.h>
 #include <AP_KDECAN/AP_KDECAN.h>
 #include <AP_LandingGear/AP_LandingGear.h>
+#include <AP_Landing/AP_Landing_config.h>
 
 #include "MissionItemProtocol_Waypoints.h"
 #include "MissionItemProtocol_Rally.h"
@@ -5442,9 +5443,9 @@ void GCS_MAVLINK::send_attitude() const
     mavlink_msg_attitude_send(
         chan,
         AP_HAL::millis(),
-        ahrs.roll,
-        ahrs.pitch,
-        ahrs.yaw,
+        ahrs.get_roll(),
+        ahrs.get_pitch(),
+        ahrs.get_yaw(),
         omega.x,
         omega.y,
         omega.z);

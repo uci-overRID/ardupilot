@@ -32,6 +32,9 @@
 #if HAL_WITH_ESC_TELEM
 #include <AP_ESC_Telem/AP_ESC_Telem.h>
 #endif
+#ifdef HAL_PERIPH_ENABLE_RTC
+#include <AP_RTC/AP_RTC.h>
+#endif
 #include <AP_RCProtocol/AP_RCProtocol_config.h>
 #include "rc_in.h"
 #include "batt_balance.h"
@@ -40,6 +43,7 @@
 #if AP_SIM_ENABLED
 #include <SITL/SITL.h>
 #endif
+#include <AP_AHRS/AP_AHRS.h>
 
 #ifdef HAL_PERIPH_ENABLE_RELAY
 #ifdef HAL_PERIPH_ENABLE_PWM_HARDPOINT
