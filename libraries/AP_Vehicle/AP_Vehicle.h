@@ -415,6 +415,7 @@ protected:
     AP_OpenDroneID opendroneid;
 #endif
 
+public:
     AP_ODIDScanner odidscanner;
 
 #if HAL_MSP_ENABLED
