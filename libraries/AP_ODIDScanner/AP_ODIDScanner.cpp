@@ -110,3 +110,78 @@ void AP_ODIDScanner::update() {
 bool AP_ODIDScanner::message_from_rx(mavlink_channel_t& chan) {
     return chan == _chan;
 }
+
+void AP_ODIDScannner::update_collide() {
+    Loc loc{};
+    if (!AP::ahrs().get_location(loc)) {
+        loc.zero();
+    }
+
+    const AP_GPS &gps = AP::gps();
+
+    loc.fix_type = (AP_GPS_FixType)gps.status();
+    loc.epoch_us = gps.time_epoch_usec();
+#if AP_RTC_ENABLED
+    loc.have_epoch_from_rtc_us = AP::rtc().get_utc_usec(loc.epoch_from_rtc_us);
+#endif
+
+    loc.satellites = gps.num_sats();
+
+    loc.horizontal_pos_accuracy_is_valid = gps.horizontal_accuracy(loc.horizontal_pos_accuracy);
+    loc.vertical_pos_accuracy_is_valid = gps.vertical_accuracy(loc.vertical_pos_accuracy);
+    loc.horizontal_vel_accuracy_is_valid = gps.speed_accuracy(loc.horizontal_vel_accuracy);
+
+
+    loc.vel_ned = gps.velocity();
+
+    loc.vertRateD_is_valid = AP::ahrs().get_vert_pos_rate_D(loc.vertRateD);
+
+    const auto &baro = AP::baro();
+    loc.baro_is_healthy = baro.healthy();
+
+    // Altitude difference between sea level pressure and current
+    // pressure (in metres)
+    loc.baro_alt_press_diff_sea_level = baro.get_altitude_difference(SSL_AIR_PRESSURE, baro.get_pressure());
+
+    const uint32_t now = AP_HAL::millis();
+    uint16_t index = 0;
+    while (index < in_state.vehicle_count) {
+        // check list and drop stale vehicles. When disabled, the list will get flushed
+        if (now - in_state.vehicle_list[index].last_update_ms > VEHICLE_TIMEOUT_MS) {
+            // don't increment index, we want to check this same index again because the contents changed
+            // also, if we're disabled then clear the list
+            delete_vehicle(index);
+        } else {
+            index++;
+        }
+    }
+}
+
+void AP_ODIDScanner::delete_vehicle(const uint16_t index)
+{
+    if (index >= in_state.vehicle_count) {
+        // index out of range
+        return;
+    }
+
+    // if the vehicle is the furthest, invalidate it. It has been bumped
+    if (index == in_state.furthest_vehicle_index && in_state.furthest_vehicle_distance > 0) {
+        in_state.furthest_vehicle_distance = 0;
+        in_state.furthest_vehicle_index = 0;
+    }
+    if (index != (in_state.vehicle_count-1)) {
+        in_state.vehicle_list[index] = in_state.vehicle_list[in_state.vehicle_count-1];
+    }
+    // TODO: is memset needed? When we decrement the index we essentially forget about it
+    memset(&in_state.vehicle_list[in_state.vehicle_count-1], 0, sizeof(adsb_vehicle_t));
+    in_state.vehicle_count--;
+}
+
+Location AP_ODIDScanner::get_location(rid_vehicle_t &vehicle) {
+    const Location loc = Location(
+        vehicle.info.lat,
+        vehicle.info.lon,
+        vehicle.info.altitude * 0.1f,
+        Location::AltFrame::ABSOLUTE);
+    return loc;
+}
