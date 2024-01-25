@@ -4470,6 +4470,7 @@ void GCS_MAVLINK::handle_message(const mavlink_message_t &msg)
         break;
 #endif
     case MAVLINK_MSG_ID_UAV_FOUND:
+    case MAVLINK_MSG_ID_ODID_HEARTBEAT:
         AP::vehicle()->odidscanner.handle_msg(msg);
         break;
 
