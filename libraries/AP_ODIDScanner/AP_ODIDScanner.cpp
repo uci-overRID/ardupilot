@@ -22,6 +22,9 @@
 AP_ODIDScanner::AP_ODIDScanner() : _mav_port(1){
 
 }
+bool AP_ODIDScanner::enabled() {
+    return true;
+}
 void AP_ODIDScanner::init() {
    _chan = mavlink_channel_t(gcs().get_channel_from_port_number(_mav_port));
     _initialised = true;
