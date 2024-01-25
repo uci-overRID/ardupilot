@@ -100,6 +100,7 @@ public:
     void delete_vehicle(const uint16_t index);
     void handle_msg(mavlink_message_t);
     Location get_location(rid_vehicle_t &);
+    bool enabled();
     // mavlink_channel_t _chan; // mavlink channel that communicates with the remote id transceiver
     uint8_t _mav_port;
     bool message_from_rx(mavlink_channel_t& chan);
