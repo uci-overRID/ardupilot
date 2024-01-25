@@ -70,7 +70,7 @@ void AP_ODIDScanner::handle_msg(mavlink_message_t msg) {
         {
             mavlink_uav_found_t uav;
             mavlink_msg_uav_found_decode(&msg, &uav);
-            GCS_SEND_TEXT(MAV_SEVERITY_INFO, "ODIDScanner: uav's here %f", uav.lat);
+            GCS_SEND_TEXT(MAV_SEVERITY_INFO, "ODIDScanner: uav's here %f,%f", uav.lat,uav.lon);
             break;
         }
         case MAVLINK_MSG_ID_ODID_HEARTBEAT:
