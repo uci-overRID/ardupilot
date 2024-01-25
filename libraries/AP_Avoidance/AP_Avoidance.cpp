@@ -7,6 +7,7 @@ extern const AP_HAL::HAL& hal;
 #include <limits>
 #include <AP_AHRS/AP_AHRS.h>
 #include <GCS_MAVLink/GCS.h>
+#include <AP_Vehicle/AP_Vehicle.h>
 #include <AP_Vehicle/AP_Vehicle_Type.h>
 
 #define AVOIDANCE_DEBUGGING 0
@@ -279,6 +280,23 @@ void AP_Avoidance::get_adsb_samples()
     }
 }
 
+void AP_Avoidance::get_odid_samples()
+{
+    //TODO: Process samples here
+    // rid_vehicle_t vehicle;
+    // while(AP::vehicle()->odidscanner.next_sample(vehicle)) {
+    //     Location loc = AP::vehicle()->odidscanner.get_location(vehicle);
+    //     add_obsctacle(vehicle.last_update_ms,
+    //             MAV_COLLISION_SRC_ADSB,
+    //             0,
+    //             loc,
+    //             vehicle.info.heading * 0.01,
+    //             vehicle.info.hor_velocity * 0.01,
+    //             -vehicle.info.ver_velocity * 0.01); // convert cm-up to m-down
+    //
+    // }
+}
+
 float closest_approach_xy(const Location &my_loc,
                           const Vector3f &my_vel,
                           const Location &obstacle_loc,
@@ -521,6 +539,9 @@ void AP_Avoidance::update()
 
     if (_adsb.enabled()) {
         get_adsb_samples();
+    }
+    if (AP::vehicle()->odidscanner.enabled()) {
+        get_odid_samples();
     }
 
     check_for_threats();

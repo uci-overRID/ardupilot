@@ -26,6 +26,7 @@
 */
 
 #include <AP_ADSB/AP_ADSB.h>
+#include<AP_ODIDScanner/AP_ODIDScanner.h>
 
 #if HAL_ADSB_ENABLED
 
@@ -177,6 +178,7 @@ private:
 
     // calls into the AP_ADSB library to retrieve vehicle data
     void get_adsb_samples();
+    void get_odid_samples();
 
     // returns true if the obstacle should be considered more of a
     // threat than the current most serious threat
