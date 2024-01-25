@@ -12,10 +12,11 @@
 #include <GCS_MAVLink/GCS.h>
 #include <AP_Common/Location.h>
 
-struct Loc : Location {
-    AltType loc_alt_type;  // more information on altitude in base class
+enum AltType {
 
-    AP_GPS_FixType fix_type;
+};
+struct Loc : Location {
+
     uint64_t epoch_us;  // microseconds since 1970-01-01
     uint64_t epoch_from_rtc_us;  // microseconds since 1970-01-01
     bool have_epoch_from_rtc_us;
@@ -36,7 +37,6 @@ struct Loc : Location {
     bool vertRateD_is_valid;
 
     // methods to make us look much like the AP::gps() singleton:
-    AP_GPS_FixType status() const { return fix_type; }
     const Vector3f &velocity() const {
         return vel_ned;
     }
@@ -72,7 +72,7 @@ public:
         // list management
         AP_Int16    list_size_param;
         uint16_t    list_size_allocated;
-        adsb_vehicle_t *vehicle_list;
+        rid_vehicle_t *vehicle_list;
         uint16_t    vehicle_count;
         AP_Int32    list_radius;
         AP_Int16    list_altitude;
@@ -99,6 +99,7 @@ public:
     Location get_location(const rid_vehicle_t &vehicle);
     void delete_vehicle(const uint16_t index);
     void handle_msg(mavlink_message_t);
+    Location get_location(rid_vehicle_t &);
     // mavlink_channel_t _chan; // mavlink channel that communicates with the remote id transceiver
     uint8_t _mav_port;
     bool message_from_rx(mavlink_channel_t& chan);

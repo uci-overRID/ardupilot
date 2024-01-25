@@ -16,6 +16,8 @@
 #include <GCS_MAVLink/GCS_MAVLink.h>
 #include <AP_Common/Location.h>
 
+#define VEHICLE_TIMEOUT_MS 30000
+
 // TODO: Random default for mav_port needs fix
 AP_ODIDScanner::AP_ODIDScanner() : _mav_port(1){
 
@@ -111,7 +113,7 @@ bool AP_ODIDScanner::message_from_rx(mavlink_channel_t& chan) {
     return chan == _chan;
 }
 
-void AP_ODIDScannner::update_collide() {
+void AP_ODIDScanner::update_collide() {
     Loc loc{};
     if (!AP::ahrs().get_location(loc)) {
         loc.zero();
@@ -119,7 +121,8 @@ void AP_ODIDScannner::update_collide() {
 
     const AP_GPS &gps = AP::gps();
 
-    loc.fix_type = (AP_GPS_FixType)gps.status();
+    // TODO: Is this necessary? I am lazy.
+    // loc.fix_type = (AP_GPS_FixType)gps.status();
     loc.epoch_us = gps.time_epoch_usec();
 #if AP_RTC_ENABLED
     loc.have_epoch_from_rtc_us = AP::rtc().get_utc_usec(loc.epoch_from_rtc_us);
@@ -173,7 +176,7 @@ void AP_ODIDScanner::delete_vehicle(const uint16_t index)
         in_state.vehicle_list[index] = in_state.vehicle_list[in_state.vehicle_count-1];
     }
     // TODO: is memset needed? When we decrement the index we essentially forget about it
-    memset(&in_state.vehicle_list[in_state.vehicle_count-1], 0, sizeof(adsb_vehicle_t));
+    memset(&in_state.vehicle_list[in_state.vehicle_count-1], 0, sizeof(rid_vehicle_t));
     in_state.vehicle_count--;
 }
 
@@ -181,7 +184,7 @@ Location AP_ODIDScanner::get_location(rid_vehicle_t &vehicle) {
     const Location loc = Location(
         vehicle.info.lat,
         vehicle.info.lon,
-        vehicle.info.altitude * 0.1f,
+        vehicle.info.alt * 0.1f,
         Location::AltFrame::ABSOLUTE);
     return loc;
 }
