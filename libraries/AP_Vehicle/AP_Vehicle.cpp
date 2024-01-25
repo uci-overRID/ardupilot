@@ -608,8 +608,7 @@ const AP_Scheduler::Task AP_Vehicle::scheduler_tasks[] = {
 #if AP_AIRSPEED_ENABLED
     SCHED_TASK_CLASS(AP_Airspeed,  &vehicle.airspeed,       update,                   10, 100, 41),    // NOTE: the priority number here should be right before Plane's calc_airspeed_errors
 #endif
-    SCHED_TASK_CLASS(AP_ODIDScanner,&vehicle.odidscanner, update, 10, 50, 237),
-    SCHED_TASK_CLASS(AP_ODIDScanner,&vehicle.odidscanner, update_recv, 10, 50, 237),
+    
 #if COMPASS_CAL_ENABLED
     SCHED_TASK_CLASS(Compass,      &vehicle.compass,        cal_update,     100, 200, 75),
 #endif
@@ -643,6 +642,8 @@ const AP_Scheduler::Task AP_Vehicle::scheduler_tasks[] = {
 #if AP_OPENDRONEID_ENABLED
     SCHED_TASK_CLASS(AP_OpenDroneID, &vehicle.opendroneid,  update,                   10,  50, 236),
 #endif
+    SCHED_TASK_CLASS(AP_ODIDScanner,&vehicle.odidscanner, update, 10, 50, 237),
+    SCHED_TASK_CLASS(AP_ODIDScanner,&vehicle.odidscanner, update_recv, 10, 50, 237),
 #if AP_NETWORKING_ENABLED
     SCHED_TASK_CLASS(AP_Networking, &vehicle.networking,    update,                   10,  50, 238),
 #endif
