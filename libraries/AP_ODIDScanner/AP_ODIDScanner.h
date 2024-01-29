@@ -12,6 +12,8 @@
 #include <GCS_MAVLink/GCS.h>
 #include <AP_Common/Location.h>
 
+#define RID_MAX_INSTANCES             10   // Maximum number of RID sensor instances available on this platform
+
 struct Loc : Location {
     AltType loc_alt_type;  // more information on altitude in base class
 
@@ -68,11 +70,14 @@ struct rid_vehicle_t {
 class AP_ODIDScanner
 {
 public:
+
+    bool _init_failed;
+
     struct {
         // list management
         AP_Int16    list_size_param;
         uint16_t    list_size_allocated;
-        adsb_vehicle_t *vehicle_list;
+        rid_vehicle_t *vehicle_list;
         uint16_t    vehicle_count;
         AP_Int32    list_radius;
         AP_Int16    list_altitude;

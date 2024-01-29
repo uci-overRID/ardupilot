@@ -28,6 +28,23 @@ void AP_ODIDScanner::init() {
         GCS_SEND_TEXT(MAV_SEVERITY_INFO, "Scanner: Found RID Device");
         _port->begin(57600, 512, 512);
     }
+
+    if (in_state.vehicle_list == nullptr) {
+        // sanity check param
+        // in_state.list_size_param.set(constrain_int16(in_state.list_size_param, 1, INT16_MAX));
+
+        in_state.list_size_param = RID_MAX_INSTANCES;
+
+        in_state.vehicle_list = new rid_vehicle_t[in_state.list_size_param];
+
+        if (in_state.vehicle_list == nullptr) {
+            // dynamic RAM allocation of in_state.vehicle_list[] failed
+            _init_failed = true;
+            GCS_SEND_TEXT(MAV_SEVERITY_INFO, "RID: Unable to initialize RID vehicle list");
+            return;
+        }
+        in_state.list_size_allocated = in_state.list_size_param;
+    }
 }
 
 void AP_ODIDScanner::update_recv() {
