@@ -90,6 +90,9 @@ public:
         uint32_t    send_start_ms[MAVLINK_COMM_NUM_BUFFERS];
         uint16_t    send_index[MAVLINK_COMM_NUM_BUFFERS];
     } in_state;
+
+    uint8_t detected_num_instances;
+
     static const uint8_t _max_samples = 30;
     ObjectBuffer<rid_vehicle_t> _samples{_max_samples};
 
@@ -103,6 +106,7 @@ public:
     void update_collide();
     Location get_location(const rid_vehicle_t &vehicle);
     void delete_vehicle(const uint16_t index);
+    void set_vehicle(const uint16_t index, const rid_vehicle_t &vehicle);
     void handle_msg(mavlink_message_t);
     // mavlink_channel_t _chan; // mavlink channel that communicates with the remote id transceiver
     uint8_t _mav_port;

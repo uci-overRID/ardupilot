@@ -43,7 +43,7 @@ void AP_ODIDScanner::init() {
             GCS_SEND_TEXT(MAV_SEVERITY_INFO, "RID: Unable to initialize RID vehicle list");
             return;
         }
-        in_state.list_size_allocated = in_state.list_size_param;
+        in_state.list_size_allocated = in_state.list_size_param;        
     }
 }
 
@@ -187,4 +187,21 @@ Location AP_ODIDScanner::get_location(rid_vehicle_t &vehicle) {
         vehicle.info.altitude * 0.1f,
         Location::AltFrame::ABSOLUTE);
     return loc;
+}
+
+/*
+ * Copy a vehicle's data into the list
+ */
+void AP_ADSB::set_vehicle(const uint16_t index, const rid_vehicle_t &vehicle)
+{
+    if (index >= in_state.list_size_allocated) {
+        // out of range
+        return;
+    }
+    in_state.vehicle_list[index] = vehicle;
+
+// TODO: write_log method required
+// #if HAL_LOGGING_ENABLED
+//     write_log(vehicle);
+// #endif
 }
