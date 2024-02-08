@@ -12,9 +12,8 @@
 #include <GCS_MAVLink/GCS.h>
 #include <AP_Common/Location.h>
 
-enum AltType {
+bool mac_eq(uint8_t a[6], uint8_t b[6]);
 
-};
 struct Loc : Location {
 
     uint64_t epoch_us;  // microseconds since 1970-01-01
@@ -64,6 +63,7 @@ struct rid_vehicle_t {
     mavlink_uav_found_t info;
     uint32_t last_update_ms;
 };
+#define DRONE_TRACK_MAX 10
 
 class AP_ODIDScanner
 {
@@ -85,8 +85,15 @@ public:
         uint32_t    send_start_ms[MAVLINK_COMM_NUM_BUFFERS];
         uint16_t    send_index[MAVLINK_COMM_NUM_BUFFERS];
     } in_state;
-    static const uint8_t _max_samples = 30;
-    ObjectBuffer<rid_vehicle_t> _samples{_max_samples};
+
+    rid_vehicle_t vehicles[DRONE_TRACK_MAX];
+    int count = 0;
+    int get_count();
+    bool update_vehicle(mavlink_uav_found_t &);
+    bool add_vehicle(mavlink_uav_found_t &);
+    rid_vehicle_t&  get_vehicle(int i);
+    Location get_vehicle_location(int i);
+
 
     AP_ODIDScanner();
 

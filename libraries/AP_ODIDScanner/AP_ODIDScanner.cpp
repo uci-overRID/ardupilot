@@ -18,6 +18,15 @@
 
 #define VEHICLE_TIMEOUT_MS 30000
 
+bool mac_eq(uint8_t a[6], uint8_t b[6]) {
+    return a[0] && b[0] &&
+           a[1] && b[1] &&
+           a[2] && b[2] &&
+           a[3] && b[3] &&
+           a[4] && b[4] &&
+           a[5] && b[5];
+}
+
 // TODO: Random default for mav_port needs fix
 AP_ODIDScanner::AP_ODIDScanner() : _mav_port(1){
 
@@ -26,7 +35,7 @@ bool AP_ODIDScanner::enabled() {
     return true;
 }
 void AP_ODIDScanner::init() {
-   _chan = mavlink_channel_t(gcs().get_channel_from_port_number(_mav_port));
+    _chan = mavlink_channel_t(gcs().get_channel_from_port_number(_mav_port));
     _initialised = true;
     _port = AP::serialmanager().get_serial_by_id(_mav_port);
     if (_port != nullptr) {
@@ -75,7 +84,9 @@ void AP_ODIDScanner::handle_msg(mavlink_message_t msg) {
         {
             mavlink_uav_found_t uav;
             mavlink_msg_uav_found_decode(&msg, &uav);
-            GCS_SEND_TEXT(MAV_SEVERITY_INFO, "ODIDScanner: uav's here %f,%f", uav.lat,uav.lon);
+            if(!update_vehicle(uav)) {
+                add_vehicle(uav);
+            }
             break;
         }
         case MAVLINK_MSG_ID_ODID_HEARTBEAT:
@@ -190,4 +201,41 @@ Location AP_ODIDScanner::get_location(rid_vehicle_t &vehicle) {
         vehicle.info.alt * 0.1f,
         Location::AltFrame::ABSOLUTE);
     return loc;
+}
+
+bool AP_ODIDScanner::update_vehicle(mavlink_uav_found_t& uav) {
+    uint32_t now_ms = AP_HAL::millis();
+    for(int i = 0;i<count;i++) {
+        if(mac_eq(uav.mac,vehicles[i].info.mac)) {
+            vehicles[i].info = uav;
+            vehicles[i].last_update_ms = now_ms;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool AP_ODIDScanner::add_vehicle(mavlink_uav_found_t &uav) {
+    uint32_t now_ms = AP_HAL::millis();
+    if(count >= DRONE_TRACK_MAX) {
+        return false;
+    } else {
+        vehicles[count].info = uav;
+        vehicles[count].last_update_ms = now_ms;
+        ++count;
+        return true;
+    }
+}
+
+int AP_ODIDScanner::get_count() {
+    return count;
+}
+
+rid_vehicle_t& AP_ODIDScanner::get_vehicle(int i) {
+    return vehicles[i];
+}
+
+Location AP_ODIDScanner::get_vehicle_location(int i) {
+    auto v = this->get_vehicle(i);
+    return Location(v.info.lat, v.info.lon, v.info.alt, Location::AltFrame::ABSOLUTE);
 }
