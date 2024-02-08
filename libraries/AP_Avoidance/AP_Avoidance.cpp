@@ -283,18 +283,16 @@ void AP_Avoidance::get_adsb_samples()
 void AP_Avoidance::get_odid_samples()
 {
     //TODO: Process samples here
-    // rid_vehicle_t vehicle;
-    // while(AP::vehicle()->odidscanner.next_sample(vehicle)) {
-    //     Location loc = AP::vehicle()->odidscanner.get_location(vehicle);
-    //     add_obsctacle(vehicle.last_update_ms,
-    //             MAV_COLLISION_SRC_ADSB,
-    //             0,
-    //             loc,
-    //             vehicle.info.heading * 0.01,
-    //             vehicle.info.hor_velocity * 0.01,
-    //             -vehicle.info.ver_velocity * 0.01); // convert cm-up to m-down
-    //
-    // }
+    for(int i = 0;i<AP::vehicle()->odidscanner.get_count();i++) {
+        auto v = AP::vehicle()->odidscanner.get_vehicle(i);
+        add_obstacle(v.last_update_ms,
+                    MAV_COLLISION_SRC_ODID,
+                    0,
+                    AP::vehicle()->odidscanner.get_vehicle_location(i),
+                    v.info.heading,
+                    v.info.hor_velocity,
+                    v.info.ver_velocity);
+    }
 }
 
 float closest_approach_xy(const Location &my_loc,
