@@ -78,6 +78,13 @@ void AP_ODIDScanner::handle_msg(mavlink_message_t msg) {
             last_dev_hb_ms = now_ms;
             break;
         }
+        case MAVLINK_MSG_ID_OPEN_DRONE_ID_LOCATION:
+        {
+            mavlink_open_drone_id_location_t loc;
+            mavlink_msg_open_drone_id_location_decode(&msg, &loc);
+            // Handle the location message.
+            break;
+        }
     }
 }
 void AP_ODIDScanner::update() {
@@ -100,3 +107,6 @@ void AP_ODIDScanner::update() {
         } 
 }
 
+bool AP_ODIDScanner::message_from_rx(mavlink_channel_t& chan) {
+    return chan == _chan;
+}
