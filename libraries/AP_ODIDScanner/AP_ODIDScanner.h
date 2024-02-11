@@ -25,6 +25,8 @@ public:
     void handle_msg(mavlink_message_t);
     // mavlink_channel_t _chan; // mavlink channel that communicates with the remote id transceiver
     uint8_t _mav_port;
+    bool message_from_rx(mavlink_channel_t& chan);
+
     mavlink_uav_found_t found_msg;
     mavlink_channel_t _chan;
     AP_HAL::UARTDriver* _port;
