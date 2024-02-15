@@ -60,7 +60,8 @@ struct Loc : Location {
 };
 
 struct rid_vehicle_t {
-    mavlink_uav_found_t info;
+    mavlink_open_drone_id_location_t loc;
+    mavlink_open_drone_id_basic_id_t info;
     uint32_t last_update_ms;
 };
 #define DRONE_TRACK_MAX 10
@@ -89,8 +90,10 @@ public:
     rid_vehicle_t vehicles[DRONE_TRACK_MAX];
     int count = 0;
     int get_count();
-    bool update_vehicle(mavlink_uav_found_t &);
-    bool add_vehicle(mavlink_uav_found_t &);
+    bool update_vehicle(mavlink_open_drone_id_location_t &);
+    bool update_vehicle(mavlink_open_drone_id_basic_id_t &);
+    bool add_vehicle(mavlink_open_drone_id_location_t &);
+    bool add_vehicle(mavlink_open_drone_id_basic_id_t &);
     rid_vehicle_t&  get_vehicle(int i);
     Location get_vehicle_location(int i);
 
