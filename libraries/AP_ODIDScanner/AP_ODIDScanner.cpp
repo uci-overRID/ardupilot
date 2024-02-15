@@ -82,11 +82,11 @@ void AP_ODIDScanner::handle_msg(mavlink_message_t msg) {
     switch(msg.msgid) {
         case MAVLINK_MSG_ID_UAV_FOUND: 
         {
-            mavlink_uav_found_t uav;
-            mavlink_msg_uav_found_decode(&msg, &uav);
-            if(!update_vehicle(uav)) {
-                add_vehicle(uav);
-            }
+            // mavlink_uav_found_t uav;
+            // mavlink_msg_uav_found_decode(&msg, &uav);
+            // if(!update_vehicle(uav)) {
+            //     add_vehicle(uav);
+            // }
             break;
         }
         case MAVLINK_MSG_ID_ODID_HEARTBEAT:
@@ -98,7 +98,21 @@ void AP_ODIDScanner::handle_msg(mavlink_message_t msg) {
         {
             mavlink_open_drone_id_location_t loc;
             mavlink_msg_open_drone_id_location_decode(&msg, &loc);
+            GCS_SEND_TEXT(MAV_SEVERITY_INFO,"Scanner: Found Drone");
             // Handle the location message.
+            if(!update_vehicle(loc)) {
+                add_vehicle(loc);
+            }
+            break;
+        }
+        case MAVLINK_MSG_ID_OPEN_DRONE_ID_BASIC_ID:
+        {
+            mavlink_open_drone_id_basic_id_t info;
+            mavlink_msg_open_drone_id_basic_id_decode(&msg, &info);
+            // Handle the location message.
+            if(!update_vehicle(info)) {
+                add_vehicle(info);
+            }
             break;
         }
     }
@@ -196,17 +210,42 @@ void AP_ODIDScanner::delete_vehicle(const uint16_t index)
 
 Location AP_ODIDScanner::get_location(rid_vehicle_t &vehicle) {
     const Location loc = Location(
-        vehicle.info.lat,
-        vehicle.info.lon,
-        vehicle.info.alt * 0.1f,
+        vehicle.loc.latitude,
+        vehicle.loc.longitude,
+        vehicle.loc.altitude_barometric * 0.1f,
+        // TODO: Right unit?
         Location::AltFrame::ABSOLUTE);
     return loc;
 }
 
-bool AP_ODIDScanner::update_vehicle(mavlink_uav_found_t& uav) {
+bool AP_ODIDScanner::update_vehicle(mavlink_open_drone_id_location_t& uav) {
     uint32_t now_ms = AP_HAL::millis();
     for(int i = 0;i<count;i++) {
-        if(mac_eq(uav.mac,vehicles[i].info.mac)) {
+        if(mac_eq(uav.id_or_mac,vehicles[i].loc.id_or_mac)) {
+            vehicles[i].loc = uav;
+            vehicles[i].last_update_ms = now_ms;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool AP_ODIDScanner::add_vehicle(mavlink_open_drone_id_location_t &uav) {
+    uint32_t now_ms = AP_HAL::millis();
+    if(count >= DRONE_TRACK_MAX) {
+        return false;
+    } else {
+        vehicles[count].loc = uav;
+        vehicles[count].last_update_ms = now_ms;
+        ++count;
+        return true;
+    }
+}
+
+bool AP_ODIDScanner::update_vehicle(mavlink_open_drone_id_basic_id_t & uav) {
+    uint32_t now_ms = AP_HAL::millis();
+    for(int i = 0;i<count;i++) {
+        if(mac_eq(uav.id_or_mac,vehicles[i].loc.id_or_mac)) {
             vehicles[i].info = uav;
             vehicles[i].last_update_ms = now_ms;
             return true;
@@ -215,7 +254,7 @@ bool AP_ODIDScanner::update_vehicle(mavlink_uav_found_t& uav) {
     return false;
 }
 
-bool AP_ODIDScanner::add_vehicle(mavlink_uav_found_t &uav) {
+bool AP_ODIDScanner::add_vehicle(mavlink_open_drone_id_basic_id_t &uav) {
     uint32_t now_ms = AP_HAL::millis();
     if(count >= DRONE_TRACK_MAX) {
         return false;
@@ -237,5 +276,5 @@ rid_vehicle_t& AP_ODIDScanner::get_vehicle(int i) {
 
 Location AP_ODIDScanner::get_vehicle_location(int i) {
     auto v = this->get_vehicle(i);
-    return Location(v.info.lat, v.info.lon, v.info.alt, Location::AltFrame::ABSOLUTE);
+    return Location(v.loc.latitude, v.loc.longitude, v.loc.altitude_barometric, Location::AltFrame::ABSOLUTE);
 }

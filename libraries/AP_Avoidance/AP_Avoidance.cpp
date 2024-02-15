@@ -283,15 +283,16 @@ void AP_Avoidance::get_adsb_samples()
 void AP_Avoidance::get_odid_samples()
 {
     //TODO: Process samples here
+    GCS_SEND_TEXT(MAV_SEVERITY_INFO,"Avoidance: Get %i drones", AP::vehicle()->odidscanner.get_count());
     for(int i = 0;i<AP::vehicle()->odidscanner.get_count();i++) {
         auto v = AP::vehicle()->odidscanner.get_vehicle(i);
         add_obstacle(v.last_update_ms,
                     MAV_COLLISION_SRC_ODID,
                     0,
                     AP::vehicle()->odidscanner.get_vehicle_location(i),
-                    v.info.heading,
-                    v.info.hor_velocity,
-                    v.info.ver_velocity);
+                    v.loc.direction, // TODO: Might not actually be heading
+                    v.loc.speed_horizontal,
+                    v.loc.speed_vertical);
     }
 }
 
