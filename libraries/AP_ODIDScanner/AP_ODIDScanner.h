@@ -12,7 +12,7 @@
 #include <GCS_MAVLink/GCS.h>
 #include <AP_Common/Location.h>
 
-bool mac_eq(uint8_t a[6], uint8_t b[6]);
+extern bool mac_eq(uint8_t a[6], uint8_t b[6]);
 
 struct Loc : Location {
 
