@@ -18,14 +18,6 @@
 
 #define VEHICLE_TIMEOUT_MS 30000
 
-bool mac_eq(uint8_t a[6], uint8_t b[6]) {
-    return a[0] && b[0] &&
-           a[1] && b[1] &&
-           a[2] && b[2] &&
-           a[3] && b[3] &&
-           a[4] && b[4] &&
-           a[5] && b[5];
-}
 
 // TODO: Random default for mav_port needs fix
 AP_ODIDScanner::AP_ODIDScanner() : _mav_port(1){
@@ -62,7 +54,7 @@ void AP_ODIDScanner::handle_msg(mavlink_message_t msg) {
             last_dev_hb_ms = now_ms;
             break;
         }
-        case MAVLINK_MSG_ID_OPEN_DRONE_ID_LOCATION:
+case MAVLINK_MSG_ID_OPEN_DRONE_ID_LOCATION:
         {
             mavlink_open_drone_id_location_t loc;
             mavlink_msg_open_drone_id_location_decode(&msg, &loc);
@@ -181,7 +173,7 @@ Location AP_ODIDScanner::get_location(rid_vehicle_t &vehicle) {
         vehicle.loc.latitude,
         vehicle.loc.longitude,
         vehicle.loc.altitude_barometric * 0.1f,
-        // TODO: Right unit?
+// TODO: Right unit?
         Location::AltFrame::ABSOLUTE);
     return loc;
 }
@@ -244,5 +236,5 @@ rid_vehicle_t& AP_ODIDScanner::get_vehicle(int i) {
 
 Location AP_ODIDScanner::get_vehicle_location(int i) {
     auto v = this->get_vehicle(i);
-    return Location(v.loc.latitude, v.loc.longitude, v.loc.altitude_barometric, Location::AltFrame::ABSOLUTE);
+    return Location(v.loc.latitude, v.loc.longitude, v.loc.altitude_barometric*100, Location::AltFrame::ABSOLUTE);
 }
