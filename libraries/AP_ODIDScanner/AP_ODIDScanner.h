@@ -104,7 +104,6 @@ public:
     CLASS_NO_COPY(AP_ODIDScanner);
     void init();
     void update();
-    void update_recv();
     void update_collide();
     Location get_location(const rid_vehicle_t &vehicle);
     void delete_vehicle(const uint16_t index);
