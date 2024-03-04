@@ -266,6 +266,7 @@ void AP_Vehicle::setup()
 #if AP_OPENDRONEID_ENABLED
     opendroneid.init();
 #endif
+    odidscanner.init();
 
 // init EFI monitoring
 #if HAL_EFI_ENABLED
@@ -832,4 +833,3 @@ AP_Vehicle *vehicle()
 }
 
 };
-
