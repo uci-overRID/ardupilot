@@ -1,5 +1,8 @@
 {
     "cSpell.language": "en-GB",
     "astyle.astylerc": "${workspaceFolder}/Tools/CodeStyle/astylerc",
-    "Lua.runtime.version": "Lua 5.3"
+    "Lua.runtime.version": "Lua 5.3",
+    "cSpell.words": [
+        "odid"
+    ]
 }

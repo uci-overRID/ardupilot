@@ -22,7 +22,9 @@
 #include <AC_Fence/AC_Fence.h>
 #include <AP_AHRS/AP_AHRS.h>
 #include <AP_Logger/AP_Logger.h>
+#include <AP_Vehicle/AP_Vehicle.h>
 #include <AP_Vehicle/AP_Vehicle_Type.h>
+#include "AP_ODIDScanner/AP_ODIDScanner.h"
 
 // parameter defaults
 const float OA_BENDYRULER_LOOKAHEAD_DEFAULT = 15.0f;
@@ -453,6 +455,10 @@ float AP_OABendyRuler::calc_avoidance_margin(const Location &start, const Locati
         margin_min = MIN(margin_min, latest_margin);
     }
 
+    if (calc_margin_from_open_drone_id(start, end, latest_margin)) {
+        margin_min = MIN(margin_min, latest_margin);
+    }
+
     // return smallest margin from any obstacle
     return margin_min;
 }
@@ -712,5 +718,39 @@ bool AP_OABendyRuler::calc_margin_from_object_database(const Location &start, co
 
     return false;
 }
+
+#if AP_ODIDSCANNER_ENABLED
+bool AP_OABendyRuler::calc_margin_from_open_drone_id(const Location &start, const Location &end, float &margin) const {
+    AP_ODIDScanner* odid = &AP::vehicle()->odidscanner;
+
+    Vector3f start_NEU,end_NEU;
+    if (!start.get_vector_from_origin_NEU(start_NEU) || !end.get_vector_from_origin_NEU(end_NEU)) {
+        return false;
+    }
+    if (start_NEU == end_NEU) {
+        return false;
+    }
+    float smallest_margin = FLT_MAX;
+    const float UAV_RADIUS = 5;
+    for(int i = 0;i<odid->get_count();i++) {
+        auto loc = odid->get_vehicle_location(i);
+        Vector3f locNEU;
+        IGNORE_RETURN(loc.get_vector_from_origin_NEU(locNEU));
+        const float m = Vector3f::closest_distance_between_line_and_point(start_NEU, end_NEU, locNEU) * 0.01f - UAV_RADIUS;
+        if(m < smallest_margin) {
+            smallest_margin = m;
+        }
+    }
+    GCS_SEND_TEXT(MAV_SEVERITY_INFO,"Got %i drones",odid->get_count());
+
+    // return smallest margin
+    if (smallest_margin < FLT_MAX) {
+        margin = smallest_margin;
+        return true;
+    }
+
+    return false;
+}
+#endif
 
 #endif  // AP_OAPATHPLANNER_BENDYRULER_ENABLED
