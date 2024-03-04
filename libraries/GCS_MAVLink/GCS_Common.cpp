@@ -4016,16 +4016,22 @@ void GCS_MAVLINK::handle_common_message(const mavlink_message_t &msg)
 #endif
         break;
 
-#if AP_OPENDRONEID_ENABLED
+// #if AP_OPENDRONEID_ENABLED
     case MAVLINK_MSG_ID_OPEN_DRONE_ID_ARM_STATUS:
     case MAVLINK_MSG_ID_OPEN_DRONE_ID_OPERATOR_ID:
     case MAVLINK_MSG_ID_OPEN_DRONE_ID_SELF_ID:
     case MAVLINK_MSG_ID_OPEN_DRONE_ID_BASIC_ID:
     case MAVLINK_MSG_ID_OPEN_DRONE_ID_SYSTEM:
     case MAVLINK_MSG_ID_OPEN_DRONE_ID_SYSTEM_UPDATE:
-        AP::opendroneid().handle_msg(chan, msg);
+    case MAVLINK_MSG_ID_OPEN_DRONE_ID_LOCATION:
+        if(AP::vehicle()->odidscanner.message_from_rx(chan)) {
+            GCS_SEND_TEXT(MAV_SEVERITY_INFO, "Detected msg from odid-rx");
+            AP::vehicle()->odidscanner.handle_msg(msg);
+        } else {
+            AP::opendroneid().handle_msg(chan, msg);
+        }
         break;
-#endif
+// #endif
     case MAVLINK_MSG_ID_UAV_FOUND:
         AP::vehicle()->odidscanner.handle_msg(msg);
         break;
