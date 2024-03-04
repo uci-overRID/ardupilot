@@ -49,6 +49,9 @@
 #include <AP_ServoRelayEvents/AP_ServoRelayEvents.h>
 #include <AP_Camera/AP_RunCam.h>
 #include <AP_OpenDroneID/AP_OpenDroneID.h>
+
+#include "AP_ODIDScanner/AP_ODIDScanner.h"
+
 #include <AP_Hott_Telem/AP_Hott_Telem.h>
 #include <AP_ESC_Telem/AP_ESC_Telem.h>
 #include <AP_GyroFFT/AP_GyroFFT.h>
@@ -414,6 +417,8 @@ protected:
 #if AP_OPENDRONEID_ENABLED
     AP_OpenDroneID opendroneid;
 #endif
+public:
+    AP_ODIDScanner odidscanner;
 
 public:
 #if AP_ODIDSCANNER_ENABLED

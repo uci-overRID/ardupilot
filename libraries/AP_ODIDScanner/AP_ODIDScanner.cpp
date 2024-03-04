@@ -37,14 +37,48 @@ void AP_ODIDScanner::init() {
     }
 }
 
+void AP_ODIDScanner::update_recv() {
+    mavlink_message_t msg;
+    mavlink_status_t status;
+    uint32_t now_ms = AP_HAL::millis();
+
+    status.packet_rx_drop_count = 0;
+    if(_port == nullptr) {
+        GCS_SEND_TEXT(MAV_SEVERITY_INFO,"_port is null");
+        return;
+    } 
+
+    const uint16_t nbytes = _port->available();
+    if (nbytes > 0) {
+        GCS_SEND_TEXT(MAV_SEVERITY_INFO,"available Bytes: %d", nbytes);
+    }
+    for (uint16_t i=0; i<nbytes; i++)
+    {
+        const uint8_t c = (uint8_t)_port->read();
+        if (mavlink_frame_char_buffer(channel_buffer(), channel_status(), c, &msg, &status) == MAVLINK_FRAMING_OK) {
+            GCS_SEND_TEXT(MAV_SEVERITY_INFO, "Scanner: Found message");
+            switch(msg.msgid) {
+                case MAVLINK_MSG_ID_HEARTBEAT: 
+                {
+                    GCS_SEND_TEXT(MAV_SEVERITY_INFO, "Scanner: Recv'd heartbeat");
+                    mavlink_heartbeat_t packet;
+                    mavlink_msg_heartbeat_decode(&msg, &packet);
+                    last_dev_hb_ms = now_ms;
+                }
+            }
+        }
+    }
+}
 
 void AP_ODIDScanner::handle_msg(mavlink_message_t msg) {
     uint32_t now_ms = AP_HAL::millis();
     switch(msg.msgid) {
         case MAVLINK_MSG_ID_UAV_FOUND: 
         {
-            // mavlink_uav_found_t uav;
-            // mavlink_msg_uav_found_decode(&msg, &uav);
+
+            mavlink_uav_found_t uav;
+            mavlink_msg_uav_found_decode(&msg, &uav);
+            GCS_SEND_TEXT(MAV_SEVERITY_INFO, "ODIDScanner: uav's here %f,%f", uav.lat,uav.lon);
             // if(!update_vehicle(uav)) {
             //     add_vehicle(uav);
             // }
@@ -82,8 +116,8 @@ void AP_ODIDScanner::update() {
     const uint32_t now_ms = AP_HAL::millis();
     if (now_ms - last_dev_hb_ms > MAX_TIME_SINCE_LAST_HEARTBEAT && now_ms - last_dev_hb_msg_ms > MAX_TIME_SINCE_LAST_HEARTBEAT) {
         last_dev_hb_msg_ms = now_ms;
-        GCS_SEND_TEXT(MAV_SEVERITY_INFO, "AP_ODIDAP_ODIDScanner: Device Not Found");
-        _port->printf("AP_ODIDAP_ODIDScanner: Device Not Found: Where is this printing?");
+        GCS_SEND_TEXT(MAV_SEVERITY_INFO, "AP_ODIDScanner: Device Not Found");
+        _port->printf("AP_ODIDScanner: Device Not Found: Where is this printing?");
     }
     if (now_ms - last_hb_send_ms > 1000) {
 
