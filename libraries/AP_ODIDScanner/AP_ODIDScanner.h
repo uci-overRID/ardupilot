@@ -31,6 +31,7 @@ struct Loc : Location {
 
     uint64_t epoch_us;  // microseconds since 1970-01-01
     uint64_t epoch_from_rtc_us;  // microseconds since 1970-01-01
+    
     bool have_epoch_from_rtc_us;
     uint8_t satellites;
 

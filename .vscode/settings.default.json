@@ -4,5 +4,8 @@
     "Lua.runtime.version": "Lua 5.3",
     "cSpell.words": [
         "odid"
-    ]
+    ],
+    "files.associations": {
+        "*.ipp": "cpp"
+    }
 }
