@@ -7,6 +7,7 @@ extern const AP_HAL::HAL& hal;
 #include <limits>
 #include <AP_AHRS/AP_AHRS.h>
 #include <GCS_MAVLink/GCS.h>
+#include <AP_Vehicle/AP_Vehicle.h>
 #include <AP_Vehicle/AP_Vehicle_Type.h>
 
 #define AVOIDANCE_DEBUGGING 0
@@ -255,7 +256,6 @@ void AP_Avoidance::add_obstacle(const uint32_t obstacle_timestamp_ms,
     vel[2] = vspeed;
     // debug("cog=%f hspeed=%f veln=%f vele=%f", cog, hspeed, vel[0], vel[1]);
     return add_obstacle(obstacle_timestamp_ms, src, src_id, loc, vel);
-
 }
 
 bool mac_eq(uint8_t a[6], uint8_t b[6]) {
@@ -336,6 +336,27 @@ void AP_Avoidance::get_adsb_samples()
                    vehicle.info.heading * 0.01,
                    vehicle.info.hor_velocity * 0.01,
                    -vehicle.info.ver_velocity * 0.01); // convert cm-up to m-down
+    }
+}
+
+void AP_Avoidance::get_odid_samples()
+{
+    //TODO: Process samples here
+    GCS_SEND_TEXT(MAV_SEVERITY_INFO,"Avoidance: Get %i drones", AP::vehicle()->odidscanner.get_count());
+    for(int i = 0;i<AP::vehicle()->odidscanner.get_count();i++) {
+        auto v = AP::vehicle()->odidscanner.get_vehicle(i);
+        uint8_t mac[6];
+        memcpy(mac, v.info.id_or_mac, 6);
+        Vector3f vel;
+        float cog = v.loc.direction;
+        vel[0] = v.loc.speed_horizontal * cosf(radians(cog));
+        vel[1] = v.loc.speed_horizontal * sinf(radians(cog));
+        vel[2] = v.loc.speed_vertical;
+        add_obstacle(v.last_update_ms,
+                    MAV_COLLISION_SRC_ODID,
+                    mac,
+                    AP::vehicle()->odidscanner.get_vehicle_location(i),
+                    vel);
     }
 }
 
@@ -581,6 +602,9 @@ void AP_Avoidance::update()
 
     if (_adsb.enabled()) {
         get_adsb_samples();
+    }
+    if (AP::vehicle()->odidscanner.enabled()) {
+        get_odid_samples();
     }
 
     check_for_threats();

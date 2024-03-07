@@ -3,5 +3,8 @@
     "astyle.astylerc": "${workspaceFolder}/Tools/CodeStyle/astylerc",
     "cSpell.words": [
         "odid"
-    ]
+    ],
+    "files.associations": {
+        "*.ipp": "cpp"
+    }
 }

@@ -26,6 +26,7 @@
 */
 
 #include <AP_ADSB/AP_ADSB.h>
+#include<AP_ODIDScanner/AP_ODIDScanner.h>
 
 #if HAL_ADSB_ENABLED
 
@@ -60,6 +61,7 @@ public:
     public:
         MAV_COLLISION_SRC src;
         uint32_t src_id;
+        uint8_t mac[6];
         uint32_t timestamp_ms;
 
         Location _location;
@@ -79,6 +81,12 @@ public:
     void add_obstacle(uint32_t obstacle_timestamp_ms,
                       const MAV_COLLISION_SRC src,
                       uint32_t src_id,
+                      const Location &loc,
+                      const Vector3f &vel_ned);
+
+    void add_obstacle(uint32_t obstacle_timestamp_ms,
+                      const MAV_COLLISION_SRC src,
+                      uint8_t src_id[6],
                       const Location &loc,
                       const Vector3f &vel_ned);
 
@@ -177,6 +185,7 @@ private:
 
     // calls into the AP_ADSB library to retrieve vehicle data
     void get_adsb_samples();
+    void get_odid_samples();
 
     // returns true if the obstacle should be considered more of a
     // threat than the current most serious threat
