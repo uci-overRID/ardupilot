@@ -4028,6 +4028,7 @@ void GCS_MAVLINK::handle_common_message(const mavlink_message_t &msg)
             GCS_SEND_TEXT(MAV_SEVERITY_INFO, "Detected msg from odid-rx");
             AP::vehicle()->odidscanner.handle_msg(msg);
         } else {
+            GCS_SEND_TEXT(MAV_SEVERITY_INFO, "Detected msg from odid-tx");
             AP::opendroneid().handle_msg(chan, msg);
         }
         break;
