@@ -4469,7 +4469,7 @@ void GCS_MAVLINK::handle_message(const mavlink_message_t &msg)
     case MAVLINK_MSG_ID_OPEN_DRONE_ID_LOCATION:
 #if AP_ODIDSCANNER_ENABLED
         if(AP::vehicle()->odidscanner.message_from_rx(chan)) {
-            GCS_SEND_TEXT(MAV_SEVERITY_INFO, "Detected msg from odid-rx");
+            // GCS_SEND_TEXT(MAV_SEVERITY_INFO, "Detected msg from odid-rx");
             AP::vehicle()->odidscanner.handle_msg(msg);
         }
 #endif

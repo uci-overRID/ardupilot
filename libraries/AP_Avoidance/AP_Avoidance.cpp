@@ -258,14 +258,14 @@ void AP_Avoidance::add_obstacle(const uint32_t obstacle_timestamp_ms,
     return add_obstacle(obstacle_timestamp_ms, src, src_id, loc, vel);
 }
 
-bool mac_eq(uint8_t a[6], uint8_t b[6]) {
-    return a[0] == b[0] &&
-           a[1] == b[1] &&
-           a[2] == b[2] &&
-           a[3] == b[3] &&
-           a[4] == b[4] &&
-           a[5] == b[5];
-}
+// bool mac_eq(uint8_t a[6], uint8_t b[6]) {
+//     return a[0] == b[0] &&
+//            a[1] == b[1] &&
+//            a[2] == b[2] &&
+//            a[3] == b[3] &&
+//            a[4] == b[4] &&
+//            a[5] == b[5];
+// }
 
 void AP_Avoidance::add_obstacle(uint32_t obstacle_timestamp_ms,
                       const MAV_COLLISION_SRC src,
@@ -707,11 +707,14 @@ void AP_Avoidance::handle_avoidance_local(AP_Avoidance::Obstacle *threat)
 {
     MAV_COLLISION_THREAT_LEVEL new_threat_level = MAV_COLLISION_THREAT_LEVEL_NONE;
     MAV_COLLISION_ACTION action = MAV_COLLISION_ACTION_NONE;
+    GCS_SEND_TEXT(MAV_SEVERITY_INFO,"Threat level: %d", new_threat_level);
+    GCS_SEND_TEXT(MAV_SEVERITY_INFO,"Closest apprach xy: %f,z: %f", threat->closest_approach_xy, threat->closest_approach_z);
 
     if (threat != nullptr) {
         new_threat_level = threat->threat_level;
         if (new_threat_level == MAV_COLLISION_THREAT_LEVEL_HIGH) {
             action = (MAV_COLLISION_ACTION)_fail_action.get();
+            GCS_SEND_TEXT(MAV_SEVERITY_INFO,"Taking fail action");
             Location my_loc;
             if (action != MAV_COLLISION_ACTION_NONE && _fail_altitude_minimum > 0 &&
                 AP::ahrs().get_location(my_loc) && ((my_loc.alt*0.01f) < _fail_altitude_minimum)) {
