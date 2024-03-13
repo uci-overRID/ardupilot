@@ -708,9 +708,9 @@ void AP_Avoidance::handle_avoidance_local(AP_Avoidance::Obstacle *threat)
     MAV_COLLISION_THREAT_LEVEL new_threat_level = MAV_COLLISION_THREAT_LEVEL_NONE;
     MAV_COLLISION_ACTION action = MAV_COLLISION_ACTION_NONE;
     GCS_SEND_TEXT(MAV_SEVERITY_INFO,"Threat level: %d", new_threat_level);
-    GCS_SEND_TEXT(MAV_SEVERITY_INFO,"Closest apprach xy: %f,z: %f", threat->closest_approach_xy, threat->closest_approach_z);
 
     if (threat != nullptr) {
+        GCS_SEND_TEXT(MAV_SEVERITY_INFO,"Closest apprach xy: %f,z: %f", threat->closest_approach_xy, threat->closest_approach_z);
         new_threat_level = threat->threat_level;
         if (new_threat_level == MAV_COLLISION_THREAT_LEVEL_HIGH) {
             action = (MAV_COLLISION_ACTION)_fail_action.get();
