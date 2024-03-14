@@ -425,7 +425,7 @@ void AP_Avoidance::get_adsb_samples()
 void AP_Avoidance::get_odid_samples()
 {
     //TODO: Process samples here
-    GCS_SEND_TEXT(MAV_SEVERITY_INFO,"Avoidance: Get %i drones", AP::vehicle()->odidscanner.get_count());
+    GCS_SEND_TEXT(MAV_SEVERITY_INFO,"Avoidance: Get %d drones", AP::vehicle()->odidscanner.get_count());
     for(int i = 0;i<AP::vehicle()->odidscanner.get_count();i++) {
         auto v = AP::vehicle()->odidscanner.get_vehicle(i);
         uint8_t mac[6];
@@ -709,14 +709,14 @@ void AP_Avoidance::handle_avoidance_local(AP_Avoidance::Obstacle *threat)
     MAV_COLLISION_THREAT_LEVEL new_threat_level = MAV_COLLISION_THREAT_LEVEL_NONE;
     MAV_COLLISION_ACTION action = MAV_COLLISION_ACTION_NONE;
     GCS_SEND_TEXT(MAV_SEVERITY_INFO,"Threat level: %d", new_threat_level);
-    AP::logger().Write("ODID", "TimeUS,Threat_level", "Qd", AP_HAL::micros64(), new_threat_level);
+    AP::logger().Write("ODID", "TimeUS,Threat_level", "Qb", AP_HAL::micros64(), new_threat_level);
 
 
     if (threat != nullptr) {
         GCS_SEND_TEXT(MAV_SEVERITY_INFO,"Closest apprach xy: %f,z: %f", threat->closest_approach_xy, threat->closest_approach_z);
-        float closest_approach_xy = threat->closest_approach_xy;
-        float closest_approach_z = threat->closest_approach_z;
-        AP::logger().Write("ODID", "TimeUS,xy,z", "Qff", AP_HAL::micros64(), closest_approach_xy, closest_approach_z);
+        // double closest_approach_xy = threat->closest_approach_xy;
+        // double closest_approach_z = threat->closest_approach_z;
+        // AP::logger().Write("ODID", "TimeUS,xy,z", "Qff", AP_HAL::micros64(), closest_approach_xy, closest_approach_z);
         new_threat_level = threat->threat_level;
         if (new_threat_level == MAV_COLLISION_THREAT_LEVEL_HIGH) {
             action = (MAV_COLLISION_ACTION)_fail_action.get();
