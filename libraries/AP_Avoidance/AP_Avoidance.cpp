@@ -713,7 +713,7 @@ void AP_Avoidance::handle_avoidance_local(AP_Avoidance::Obstacle *threat)
 
 
     if (threat != nullptr) {
-        GCS_SEND_TEXT(MAV_SEVERITY_INFO,"Closest apprach xy: %f,z: %f", threat->closest_approach_xy, threat->closest_approach_z);
+        GCS_SEND_TEXT(MAV_SEVERITY_INFO,"xy: %f,z: %f", threat->closest_approach_xy, threat->closest_approach_z);
         // double closest_approach_xy = threat->closest_approach_xy;
         // double closest_approach_z = threat->closest_approach_z;
         // AP::logger().Write("ODID", "TimeUS,xy,z", "Qff", AP_HAL::micros64(), closest_approach_xy, closest_approach_z);
