@@ -243,5 +243,5 @@ rid_vehicle_t& AP_ODIDScanner::get_vehicle(int i) {
 
 Location AP_ODIDScanner::get_vehicle_location(int i) {
     auto v = this->get_vehicle(i);
-    return Location(v.loc.latitude, v.loc.longitude, v.loc.altitude_barometric*100, Location::AltFrame::ABSOLUTE);
+    return Location(v.loc.latitude, v.loc.longitude, v.loc.altitude_geodetic*100, Location::AltFrame::ABSOLUTE);
 }
