@@ -399,7 +399,7 @@ const AP_Scheduler::Task AP_Vehicle::scheduler_tasks[] = {
 #endif
     SCHED_TASK_CLASS(AP_ODIDScanner,&vehicle.odidscanner, update, 0.25, 50, 237),
 #if OSD_ENABLED
-    SCHED_TASK(publish_osd_info, 1, 10, 240),
+    SCHED_TASK(publish_osd_info, 0.25, 10, 240),
 #endif
 #if AP_TEMPERATURE_SENSOR_ENABLED
     SCHED_TASK_CLASS(AP_TemperatureSensor, &vehicle.temperature_sensor, update,        5, 50, 242),
