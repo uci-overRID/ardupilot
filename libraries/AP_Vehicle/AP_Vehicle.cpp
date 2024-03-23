@@ -651,7 +651,7 @@ const AP_Scheduler::Task AP_Vehicle::scheduler_tasks[] = {
     SCHED_TASK_CLASS(AP_Networking, &vehicle.networking,    update,                   10,  50, 238),
 #endif
 #if OSD_ENABLED
-    SCHED_TASK(publish_osd_info, 0.25, 10, 240),
+    SCHED_TASK(publish_osd_info, 1, 10, 240),
 #endif
 #if AP_TEMPERATURE_SENSOR_ENABLED
     SCHED_TASK_CLASS(AP_TemperatureSensor, &vehicle.temperature_sensor, update,        5, 50, 242),
