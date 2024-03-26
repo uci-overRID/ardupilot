@@ -674,6 +674,7 @@ void AP_Avoidance::handle_avoidance_local(AP_Avoidance::Obstacle *threat)
         uint32_t now = AP_HAL::millis();
         if ( (now - time_of_last_GCS_nearest_drone_update ) > 1000){
             // xxx want to send instantaneous xy and z distance, from the threat object....
+            if(false){
             const AP_AHRS &_ahrs = AP::ahrs();
             Location my_loc;
             if (!_ahrs.get_location(my_loc)) {
@@ -686,7 +687,10 @@ void AP_Avoidance::handle_avoidance_local(AP_Avoidance::Obstacle *threat)
 
             GCS_SEND_TEXT(MAV_SEVERITY_INFO,"xy: %f,z: %f", instantaneous_xy, instantaneous_z);
             //GCS_SEND_TEXT(MAV_SEVERITY_INFO,"xy: %f,z: %f", threat->closest_approach_xy, threat->closest_approach_z);
+
+            }
             time_of_last_GCS_nearest_drone_update=now;
+            GCS_SEND_TEXT(MAV_SEVERITY_INFO,"xy: %f,z: %f", float(now), float(now));
         }
         // double closest_approach_xy = threat->closest_approach_xy;
         // double closest_approach_z = threat->closest_approach_z;
