@@ -154,6 +154,9 @@ protected:
     static Vector3f perpendicular_xyz(const Location &p1, const Vector3f &v1, const Location &p2);
     static Vector2f perpendicular_xy(const Location &p1, const Vector3f &v1, const Location &p2);
 
+    // ODID avoidance variables
+    uint32_t time_of_last_GCS_nearest_drone_update;
+
 private:
 
     void send_collision_all(const AP_Avoidance::Obstacle &threat, MAV_COLLISION_ACTION behaviour) const;

@@ -628,12 +628,19 @@ void AP_Avoidance::handle_avoidance_local(AP_Avoidance::Obstacle *threat)
 {
     MAV_COLLISION_THREAT_LEVEL new_threat_level = MAV_COLLISION_THREAT_LEVEL_NONE;
     MAV_COLLISION_ACTION action = MAV_COLLISION_ACTION_NONE;
-    GCS_SEND_TEXT(MAV_SEVERITY_INFO,"Threat level: %d", new_threat_level);
+    // GCS_SEND_TEXT(MAV_SEVERITY_INFO,"Threat level: %d", new_threat_level);
     AP::logger().Write("ODID", "TimeUS,Threat_level", "Qb", AP_HAL::micros64(), new_threat_level);
 
 
     if (threat != nullptr) {
-        GCS_SEND_TEXT(MAV_SEVERITY_INFO,"xy: %f,z: %f", threat->closest_approach_xy, threat->closest_approach_z);
+        // xxx need a timer here, update to OSD is too often at 10 Hz...
+        // pseudo code:
+        // now=millis()
+        // if now-_time_of_last_GCS_nearest_drone_update > 1000 ms then post new message...
+        uint32_t now = AP_HAL::millis();
+        if ( (now - time_of_last_GCS_nearest_drone_update ) > 1000){
+            GCS_SEND_TEXT(MAV_SEVERITY_INFO,"xy: %f,z: %f", threat->closest_approach_xy, threat->closest_approach_z);
+        }
         // double closest_approach_xy = threat->closest_approach_xy;
         // double closest_approach_z = threat->closest_approach_z;
         // AP::logger().Write("ODID", "TimeUS,xy,z", "Qff", AP_HAL::micros64(), closest_approach_xy, closest_approach_z);

@@ -87,17 +87,18 @@ void AP_ODIDScanner::update() {
         GCS_SEND_TEXT(MAV_SEVERITY_INFO, "AP_ODIDScanner: Device Not Found");
         _port->printf("AP_ODIDScanner: Device Not Found: Where is this printing?");
     }
-    if (now_ms - last_hb_send_ms > 1000) {
 
+    if (now_ms - last_hb_send_ms > 1000) { // why this?
         last_hb_send_ms = now_ms;
-    mavlink_msg_heartbeat_send(
+        mavlink_msg_heartbeat_send(
         _chan,
         gcs().frame_type(),
         MAV_AUTOPILOT_ARDUPILOTMEGA,
         0,
         gcs().custom_mode(),
         0);
-        } 
+    } 
+
 }
 
 bool AP_ODIDScanner::message_from_rx(mavlink_channel_t& chan) {
