@@ -484,12 +484,13 @@ void AP_Avoidance::update_threat_level_ODID(const Location &my_loc,
 
     // float closest_xy = closest_approach_xy(my_loc, my_vel, obstacle_loc, obstacle_vel, _fail_time_horizon + obstacle_age/1000);
 
+    // xxx
     double instantaneous_xy = my_loc.get_distance(obstacle_loc); 
-    double instantaneous_z = my_loc.get_alt_distance(obstacle_loc,instantaneous_xy); 
+    double instantaneous_z = abs(0.01*(obstacle_loc.alt-my_loc.alt)); 
 
 
 
-    if ((instantaneous_xy < _fail_distance_xy) || (instantaneous_z < _fail_distance_z)) {
+    if ((instantaneous_xy < _fail_distance_xy) && (instantaneous_z < _fail_distance_z)) {
         obstacle.threat_level = MAV_COLLISION_THREAT_LEVEL_HIGH;
     } else {
         obstacle.threat_level = MAV_COLLISION_THREAT_LEVEL_LOW;
@@ -600,8 +601,8 @@ void AP_Avoidance::check_for_threats()
         const uint32_t obstacle_age = AP_HAL::millis() - obstacle.timestamp_ms;
         debug("i=%d src_id=%d timestamp=%u age=%d", i, obstacle.src_id, obstacle.timestamp_ms, obstacle_age);
 
-        update_threat_level(my_loc, my_vel, obstacle);
-        //update_threat_level_ODID(my_loc, my_vel, obstacle);
+        //update_threat_level(my_loc, my_vel, obstacle);
+        update_threat_level_ODID(my_loc, my_vel, obstacle);
         debug("   threat-level=%d", obstacle.threat_level);
 
         // ignore any really old data:
