@@ -87,22 +87,24 @@ case MAVLINK_MSG_ID_OPEN_DRONE_ID_LOCATION:
 }
 void AP_ODIDScanner::update() {
     const uint32_t now_ms = AP_HAL::millis();
-    if (now_ms - last_dev_hb_ms > 5000 && now_ms - last_dev_hb_msg_ms > 5000) {
+
+    if (now_ms - last_dev_hb_ms > 15000 && now_ms - last_dev_hb_msg_ms > 15000) {
         last_dev_hb_msg_ms = now_ms;
-        GCS_SEND_TEXT(MAV_SEVERITY_INFO, "Scanner: Device Not Found");
+        GCS_SEND_TEXT(MAV_SEVERITY_INFO, "Scanner: Device Not Found at %f",float(now_ms));
         _port->printf("Scanner: Where is this printing?");
     }
-    if (now_ms - last_hb_send_ms > 1000) {
 
+    if (now_ms - last_hb_send_ms > 1000) { // why this?
         last_hb_send_ms = now_ms;
-    mavlink_msg_heartbeat_send(
+        mavlink_msg_heartbeat_send(
         _chan,
         gcs().frame_type(),
         MAV_AUTOPILOT_ARDUPILOTMEGA,
         0,
         gcs().custom_mode(),
         0);
-        } 
+    } 
+
 }
 
 bool AP_ODIDScanner::message_from_rx(mavlink_channel_t& chan) {
