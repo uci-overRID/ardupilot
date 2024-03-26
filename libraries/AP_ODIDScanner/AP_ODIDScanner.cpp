@@ -85,6 +85,7 @@ void AP_ODIDScanner::update() {
     if (now_ms - last_dev_hb_ms > MAX_TIME_SINCE_LAST_HEARTBEAT && now_ms - last_dev_hb_msg_ms > MAX_TIME_SINCE_LAST_HEARTBEAT) {
         last_dev_hb_msg_ms = now_ms;
         GCS_SEND_TEXT(MAV_SEVERITY_INFO, "AP_ODIDScanner: Device Not Found");
+        // this is a bug, the device is working when this is sent....
         _port->printf("AP_ODIDScanner: Device Not Found: Where is this printing?");
     }
 

@@ -640,6 +640,7 @@ void AP_Avoidance::handle_avoidance_local(AP_Avoidance::Obstacle *threat)
         uint32_t now = AP_HAL::millis();
         if ( (now - time_of_last_GCS_nearest_drone_update ) > 1000){
             GCS_SEND_TEXT(MAV_SEVERITY_INFO,"xy: %f,z: %f", threat->closest_approach_xy, threat->closest_approach_z);
+            time_of_last_GCS_nearest_drone_update=now;
         }
         // double closest_approach_xy = threat->closest_approach_xy;
         // double closest_approach_z = threat->closest_approach_z;
