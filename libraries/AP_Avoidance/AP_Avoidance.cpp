@@ -683,9 +683,10 @@ void AP_Avoidance::handle_avoidance_local(AP_Avoidance::Obstacle *threat)
             }
 
             double instantaneous_xy = my_loc.get_distance(threat->_location); 
-            double instantaneous_z = my_loc.get_alt_distance(threat->_location,instantaneous_xy); 
+            //double instantaneous_z = my_loc.get_alt_distance(threat->_location,instantaneous_xy); 
+            double instantaneous_z = 0.01*(threat->_location.alt-my_loc.alt); 
+            GCS_SEND_TEXT(MAV_SEVERITY_INFO,"xy:%.0fm,  z:%.0fm", instantaneous_xy, instantaneous_z);
 
-            GCS_SEND_TEXT(MAV_SEVERITY_INFO,"xy: %f,z: %f", instantaneous_xy, instantaneous_z);
             //GCS_SEND_TEXT(MAV_SEVERITY_INFO,"xy: %f,z: %f", threat->closest_approach_xy, threat->closest_approach_z);
 
             }
