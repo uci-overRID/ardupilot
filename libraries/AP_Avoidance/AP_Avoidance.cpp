@@ -470,6 +470,39 @@ void AP_Avoidance::update_threat_level(const Location &my_loc,
     }
 }
 
+void AP_Avoidance::update_threat_level_ODID(const Location &my_loc,
+                                       const Vector3f &my_vel,
+                                       AP_Avoidance::Obstacle &obstacle)
+{
+
+    Location &obstacle_loc = obstacle._location;
+    // Vector3f &obstacle_vel = obstacle._velocity;
+
+    obstacle.threat_level = MAV_COLLISION_THREAT_LEVEL_NONE;
+
+    const uint32_t obstacle_age = AP_HAL::millis() - obstacle.timestamp_ms;
+
+    // float closest_xy = closest_approach_xy(my_loc, my_vel, obstacle_loc, obstacle_vel, _fail_time_horizon + obstacle_age/1000);
+
+    double instantaneous_xy = my_loc.get_distance(obstacle_loc); 
+    double instantaneous_z = my_loc.get_alt_distance(obstacle_loc,instantaneous_xy); 
+
+
+
+    if ((instantaneous_xy < _fail_distance_xy) || (instantaneous_z < _fail_distance_z)) {
+        obstacle.threat_level = MAV_COLLISION_THREAT_LEVEL_HIGH;
+    } else {
+        obstacle.threat_level = MAV_COLLISION_THREAT_LEVEL_LOW;
+    }
+
+
+    // If we haven't heard from a vehicle then assume it is no threat
+    if (obstacle_age > MAX_OBSTACLE_AGE_MS) {
+        obstacle.threat_level = MAV_COLLISION_THREAT_LEVEL_NONE;
+    }
+
+}
+
 MAV_COLLISION_THREAT_LEVEL AP_Avoidance::current_threat_level() const {
     if (_obstacles == nullptr) {
         return MAV_COLLISION_THREAT_LEVEL_NONE;
@@ -567,7 +600,8 @@ void AP_Avoidance::check_for_threats()
         const uint32_t obstacle_age = AP_HAL::millis() - obstacle.timestamp_ms;
         debug("i=%d src_id=%d timestamp=%u age=%d", i, obstacle.src_id, obstacle.timestamp_ms, obstacle_age);
 
-        update_threat_level(my_loc, my_vel, obstacle);
+        //update_threat_level(my_loc, my_vel, obstacle);
+        update_threat_level_ODID(my_loc, my_vel, obstacle);
         debug("   threat-level=%d", obstacle.threat_level);
 
         // ignore any really old data:
@@ -633,13 +667,25 @@ void AP_Avoidance::handle_avoidance_local(AP_Avoidance::Obstacle *threat)
 
 
     if (threat != nullptr) {
-        // xxx need a timer here, update to OSD is too often at 10 Hz...
+        // need a timer here, update to OSD is too often at 10 Hz...
         // pseudo code:
         // now=millis()
         // if now-_time_of_last_GCS_nearest_drone_update > 1000 ms then post new message...
         uint32_t now = AP_HAL::millis();
         if ( (now - time_of_last_GCS_nearest_drone_update ) > 1000){
-            GCS_SEND_TEXT(MAV_SEVERITY_INFO,"xy: %f,z: %f", threat->closest_approach_xy, threat->closest_approach_z);
+            // xxx want to send instantaneous xy and z distance, from the threat object....
+            const AP_AHRS &_ahrs = AP::ahrs();
+            Location my_loc;
+            if (!_ahrs.get_location(my_loc)) {
+                // if we don't know our own location we can't determine any threat level
+                return;
+            }
+
+            double instantaneous_xy = my_loc.get_distance(threat->_location); 
+            double instantaneous_z = my_loc.get_alt_distance(threat->_location,instantaneous_xy); 
+
+            GCS_SEND_TEXT(MAV_SEVERITY_INFO,"xy: %f,z: %f", instantaneous_xy, instantaneous_z);
+            //GCS_SEND_TEXT(MAV_SEVERITY_INFO,"xy: %f,z: %f", threat->closest_approach_xy, threat->closest_approach_z);
             time_of_last_GCS_nearest_drone_update=now;
         }
         // double closest_approach_xy = threat->closest_approach_xy;

@@ -186,6 +186,13 @@ private:
                              const Vector3f &my_vel,
                              AP_Avoidance::Obstacle &obstacle);
 
+    // collision avoidance using ODID RID, only use proximity (e.g. drone within a certain distance), not projected flight path
+    void update_threat_level_ODID(const Location &my_loc,
+                             const Vector3f &my_vel,
+                             AP_Avoidance::Obstacle &obstacle);
+
+
+
     // calls into the AP_ADSB library to retrieve vehicle data
     void get_adsb_samples();
     void get_odid_samples();
