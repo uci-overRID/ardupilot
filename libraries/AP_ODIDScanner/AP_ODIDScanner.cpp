@@ -66,7 +66,7 @@ case MAVLINK_MSG_ID_OPEN_DRONE_ID_LOCATION:
         {
             mavlink_open_drone_id_location_t loc;
             mavlink_msg_open_drone_id_location_decode(&msg, &loc);
-            GCS_SEND_TEXT(MAV_SEVERITY_INFO,"Scanner: Found Drone");
+            //GCS_SEND_TEXT(MAV_SEVERITY_INFO,"Scanner: Found Drone");
             // Handle the location message.
             if(!update_vehicle(loc)) {
                 add_vehicle(loc);
@@ -90,7 +90,8 @@ void AP_ODIDScanner::update() {
 
     if (now_ms - last_dev_hb_ms > 15000 && now_ms - last_dev_hb_msg_ms > 15000) {
         last_dev_hb_msg_ms = now_ms;
-        GCS_SEND_TEXT(MAV_SEVERITY_INFO, "Scanner: Device Not Found at %f",float(now_ms));
+        // GCS_SEND_TEXT(MAV_SEVERITY_INFO, "Scanner: Device Not Found at %f",float(now_ms));
+        // this is a bug, the device is working when this is sent....
         _port->printf("Scanner: Where is this printing?");
     }
 
