@@ -600,8 +600,8 @@ void AP_Avoidance::check_for_threats()
         const uint32_t obstacle_age = AP_HAL::millis() - obstacle.timestamp_ms;
         debug("i=%d src_id=%d timestamp=%u age=%d", i, obstacle.src_id, obstacle.timestamp_ms, obstacle_age);
 
-        //update_threat_level(my_loc, my_vel, obstacle);
-        update_threat_level_ODID(my_loc, my_vel, obstacle);
+        update_threat_level(my_loc, my_vel, obstacle);
+        //update_threat_level_ODID(my_loc, my_vel, obstacle);
         debug("   threat-level=%d", obstacle.threat_level);
 
         // ignore any really old data:
@@ -674,7 +674,7 @@ void AP_Avoidance::handle_avoidance_local(AP_Avoidance::Obstacle *threat)
         uint32_t now = AP_HAL::millis();
         if ( (now - time_of_last_GCS_nearest_drone_update ) > 1000){
             // xxx want to send instantaneous xy and z distance, from the threat object....
-            if(false){
+            if(true){
             const AP_AHRS &_ahrs = AP::ahrs();
             Location my_loc;
             if (!_ahrs.get_location(my_loc)) {
@@ -690,7 +690,7 @@ void AP_Avoidance::handle_avoidance_local(AP_Avoidance::Obstacle *threat)
 
             }
             time_of_last_GCS_nearest_drone_update=now;
-            GCS_SEND_TEXT(MAV_SEVERITY_INFO,"xy: %f,z: %f", float(now), float(now));
+            // GCS_SEND_TEXT(MAV_SEVERITY_INFO,"xy: %f,z: %f", float(now), float(now)); // just a way to send time to osd to check osd message working
         }
         // double closest_approach_xy = threat->closest_approach_xy;
         // double closest_approach_z = threat->closest_approach_z;
