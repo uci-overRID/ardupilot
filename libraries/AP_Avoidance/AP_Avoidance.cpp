@@ -686,21 +686,16 @@ void AP_Avoidance::handle_avoidance_local(AP_Avoidance::Obstacle *threat)
             double instantaneous_xy = my_loc.get_distance(threat->_location); 
             //double instantaneous_z = my_loc.get_alt_distance(threat->_location,instantaneous_xy); 
             double instantaneous_z = -1000; // default error is -1000
-            0.01*(threat->_location.alt-my_loc.alt);  // wrong uses mixed alt definitions
+            // = 0.01*(threat->_location.alt-my_loc.alt);  // wrong uses mixed alt definitions
             int32_t m_ret_alt_cm; // temporary variable to store alt
             if(get_alt_cm(Location::AltFrame::ABOVE_HOME,  m_ret_alt_cm)){
                 // alt location good
-                instantaneous_z = 0.01*(threat->_location.alt-m_ret_alt_cm);  
+                instantaneous_z = threat->_location.alt-0.01*m_ret_alt_cm;  
             }
             else{
                 // alt location bad
                 instantaneous_z=-1000;
             }
-
-            bool get_alt_cm(AltFrame desired_frame, int32_t &ret_alt_cm) const WARN_IF_UNUSED;
-
-
-
 
             GCS_SEND_TEXT(MAV_SEVERITY_INFO,"xy:%.0fm,  z:%.0fm", instantaneous_xy, instantaneous_z);
 
