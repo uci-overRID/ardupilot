@@ -177,9 +177,13 @@ Location AP_ODIDScanner::get_location(rid_vehicle_t &vehicle) {
     const Location loc = Location(
         vehicle.loc.latitude,
         vehicle.loc.longitude,
-        vehicle.loc.altitude_geodetic * 0.1f,
+        vehicle.loc.height;
+
+        // vehicle.loc.altitude_geodetic * 0.1f,
 // TODO: Right unit?
-        Location::AltFrame::ABSOLUTE);
+//        Location::AltFrame::ABSOLUTE);
+        Location::AltFrame::ABOVE_HOME);
+
     return loc;
 }
 
