@@ -688,7 +688,7 @@ void AP_Avoidance::handle_avoidance_local(AP_Avoidance::Obstacle *threat)
             double instantaneous_z = -1000; // default error is -1000
             // = 0.01*(threat->_location.alt-my_loc.alt);  // wrong uses mixed alt definitions
             int32_t m_ret_alt_cm; // temporary variable to store alt
-            if(get_alt_cm(Location::AltFrame::ABOVE_HOME,  m_ret_alt_cm)){
+            if(my_loc.get_alt_cm(Location::AltFrame::ABOVE_HOME,  m_ret_alt_cm)){
                 // alt location good
                 instantaneous_z = threat->_location.alt-0.01*m_ret_alt_cm;  
             }
