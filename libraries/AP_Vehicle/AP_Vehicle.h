@@ -416,7 +416,9 @@ protected:
 #endif
 
 public:
+#if AP_ODIDSCANNER_ENABLED
     AP_ODIDScanner odidscanner;
+#endif
 
 #if HAL_MSP_ENABLED
     AP_MSP msp;

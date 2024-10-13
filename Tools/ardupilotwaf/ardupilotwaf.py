@@ -122,6 +122,7 @@ COMMON_VEHICLE_DEPENDENT_LIBRARIES = [
     'AP_CustomRotations',
     'AP_AIS',
     'AP_OpenDroneID',
+    'AP_ODIDScanner',
     'AP_CheckFirmware',
     'AP_ExternalControl',
     'AP_JSON',

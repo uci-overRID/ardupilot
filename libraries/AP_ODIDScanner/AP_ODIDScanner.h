@@ -2,8 +2,9 @@
 #pragma once
 
 #include <cstdint>
-#define ODID_SCANNER_ENABLED 1
-#ifdef ODID_SCANNER_ENABLED
+#include "AP_ODIDScanner_config.h"
+
+#ifdef AP_ODIDSCANNER_ENABLED
 
 #include "AP_Common/AP_Common.h"
 #include <AP_Math/AP_Math.h>
