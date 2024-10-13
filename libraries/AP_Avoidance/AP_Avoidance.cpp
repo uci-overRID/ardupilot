@@ -339,6 +339,7 @@ void AP_Avoidance::get_adsb_samples()
     }
 }
 
+#if AP_ODIDSCANNER_ENABLED
 void AP_Avoidance::get_odid_samples()
 {
     //TODO: Process samples here
@@ -359,6 +360,7 @@ void AP_Avoidance::get_odid_samples()
                     vel);
     }
 }
+#endif
 
 float closest_approach_xy(const Location &my_loc,
                           const Vector3f &my_vel,
@@ -605,9 +607,12 @@ void AP_Avoidance::update()
     if (_adsb.enabled()) {
         get_adsb_samples();
     }
+    
+#if AP_ODIDSCANNER_ENABLED
     if (AP::vehicle()->odidscanner.enabled()) {
         get_odid_samples();
     }
+#endif
 
     check_for_threats();
 

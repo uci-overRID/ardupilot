@@ -26,7 +26,7 @@
 */
 
 #include <AP_ADSB/AP_ADSB.h>
-#include<AP_ODIDScanner/AP_ODIDScanner.h>
+#include <AP_ODIDScanner/AP_ODIDScanner.h>
 
 #if HAL_ADSB_ENABLED
 
