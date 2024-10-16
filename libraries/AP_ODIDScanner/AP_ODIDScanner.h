@@ -4,7 +4,7 @@
 #include <cstdint>
 #include "AP_ODIDScanner_config.h"
 
-#ifdef AP_ODIDSCANNER_ENABLED
+#if AP_ODIDSCANNER_ENABLED
 
 #include "AP_Common/AP_Common.h"
 #include <AP_Math/AP_Math.h>
@@ -12,6 +12,14 @@
 #include <GCS_MAVLink/GCS_MAVLink.h>
 #include <GCS_MAVLink/GCS.h>
 #include <AP_Common/Location.h>
+
+#ifndef HAL_ADSB_ENABLED
+    #define HAL_ADSB_ENABLED 0
+#endif
+
+#if !HAL_ADSB_ENABLED
+    #error ODIDScanner depends on ADSB for Avoidance functionality via AP_Avoidance.
+#endif
 
 extern bool mac_eq(uint8_t a[6], uint8_t b[6]); // From AP_Avoidance
 

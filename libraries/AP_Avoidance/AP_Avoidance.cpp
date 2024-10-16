@@ -258,6 +258,7 @@ void AP_Avoidance::add_obstacle(const uint32_t obstacle_timestamp_ms,
     return add_obstacle(obstacle_timestamp_ms, src, src_id, loc, vel);
 }
 
+#if AP_ODIDSCANNER_ENABLED
 bool mac_eq(uint8_t a[6], uint8_t b[6]) {
     return a[0] == b[0] &&
            a[1] == b[1] &&
@@ -317,29 +318,6 @@ void AP_Avoidance::add_obstacle(uint32_t obstacle_timestamp_ms,
     
 }
 
-uint32_t AP_Avoidance::src_id_for_adsb_vehicle(const AP_ADSB::adsb_vehicle_t &vehicle) const
-{
-    // TODO: need to include squawk code and callsign
-    return vehicle.info.ICAO_address;
-}
-
-void AP_Avoidance::get_adsb_samples()
-{
-    AP_ADSB::adsb_vehicle_t vehicle;
-    while (_adsb.next_sample(vehicle)) {
-        uint32_t src_id = src_id_for_adsb_vehicle(vehicle);
-        Location loc = _adsb.get_location(vehicle);
-        add_obstacle(vehicle.last_update_ms,
-                   MAV_COLLISION_SRC_ADSB,
-                   src_id,
-                   loc,
-                   vehicle.info.heading * 0.01,
-                   vehicle.info.hor_velocity * 0.01,
-                   -vehicle.info.ver_velocity * 0.01); // convert cm-up to m-down
-    }
-}
-
-#if AP_ODIDSCANNER_ENABLED
 void AP_Avoidance::get_odid_samples()
 {
     //TODO: Process samples here
@@ -361,6 +339,28 @@ void AP_Avoidance::get_odid_samples()
     }
 }
 #endif
+
+uint32_t AP_Avoidance::src_id_for_adsb_vehicle(const AP_ADSB::adsb_vehicle_t &vehicle) const
+{
+    // TODO: need to include squawk code and callsign
+    return vehicle.info.ICAO_address;
+}
+
+void AP_Avoidance::get_adsb_samples()
+{
+    AP_ADSB::adsb_vehicle_t vehicle;
+    while (_adsb.next_sample(vehicle)) {
+        uint32_t src_id = src_id_for_adsb_vehicle(vehicle);
+        Location loc = _adsb.get_location(vehicle);
+        add_obstacle(vehicle.last_update_ms,
+                   MAV_COLLISION_SRC_ADSB,
+                   src_id,
+                   loc,
+                   vehicle.info.heading * 0.01,
+                   vehicle.info.hor_velocity * 0.01,
+                   -vehicle.info.ver_velocity * 0.01); // convert cm-up to m-down
+    }
+}
 
 float closest_approach_xy(const Location &my_loc,
                           const Vector3f &my_vel,

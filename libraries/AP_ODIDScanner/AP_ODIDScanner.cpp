@@ -1,4 +1,7 @@
 #include "AP_ODIDScanner.h"
+
+#if AP_ODIDSCANNER_ENABLED
+
 #include "GCS_MAVLink/GCS_MAVLink.h"
 #include "GCS_MAVLink/GCS.h"
 #include <AP_HAL/AP_HAL.h>
@@ -238,3 +241,5 @@ Location AP_ODIDScanner::get_vehicle_location(int i) {
     auto v = this->get_vehicle(i);
     return Location(v.loc.latitude, v.loc.longitude, v.loc.altitude_barometric*100, Location::AltFrame::ABSOLUTE);
 }
+
+#endif
