@@ -259,65 +259,6 @@ void AP_Avoidance::add_obstacle(const uint32_t obstacle_timestamp_ms,
     return add_obstacle(obstacle_timestamp_ms, src, src_id, loc, vel);
 }
 
-// bool mac_eq(uint8_t a[6], uint8_t b[6]) {
-//     return a[0] == b[0] &&
-//            a[1] == b[1] &&
-//            a[2] == b[2] &&
-//            a[3] == b[3] &&
-//            a[4] == b[4] &&
-//            a[5] == b[5];
-// }
-
-void AP_Avoidance::add_obstacle(uint32_t obstacle_timestamp_ms,
-                      const MAV_COLLISION_SRC src,
-                      uint8_t src_id[6],
-                      const Location &loc,
-                      const Vector3f &vel_ned) 
-{
-    if (! check_startup()) {
-        return;
-    }
-    uint32_t oldest_timestamp = std::numeric_limits<uint32_t>::max();
-    uint8_t oldest_index = 255; // avoid compiler warning with initialisation
-    int16_t index = -1;
-    uint8_t i;
-    for (i=0; i<_obstacle_count; i++) {
-        if (mac_eq(src_id, _obstacles[i].mac) &&
-            _obstacles[i].src == src) {
-            // pre-existing obstacle found; we will update its information
-            index = i;
-            break;
-        }
-        if (_obstacles[i].timestamp_ms < oldest_timestamp) {
-            oldest_timestamp = _obstacles[i].timestamp_ms;
-            oldest_index = i;
-        }
-    }
-    WITH_SEMAPHORE(_rsem);
-
-    if (index == -1) {
-        // existing obstacle not found.  See if we can store it anyway:
-        if (i <_obstacles_allocated) {
-            // have room to store more vehicles...
-            index = _obstacle_count++;
-        } else if (oldest_timestamp < obstacle_timestamp_ms) {
-            // replace this very old entry with this new data
-            index = oldest_index;
-        } else {
-            // no room for this (old?!) data
-            return;
-        }
-
-        _obstacles[index].src = src;
-        memcpy(_obstacles[index].mac, src_id, 6);
-    }
-
-    _obstacles[index]._location = loc;
-    _obstacles[index]._velocity = vel_ned;
-    _obstacles[index].timestamp_ms = obstacle_timestamp_ms;
-
-}
-
 #if AP_ODIDSCANNER_ENABLED
 bool mac_eq(uint8_t a[6], uint8_t b[6]) {
     return a[0] == b[0] &&
@@ -419,27 +360,6 @@ void AP_Avoidance::get_adsb_samples()
                    vehicle.info.heading * 0.01,
                    vehicle.info.hor_velocity * 0.01,
                    -vehicle.info.ver_velocity * 0.01); // convert cm-up to m-down
-    }
-}
-
-void AP_Avoidance::get_odid_samples()
-{
-    //TODO: Process samples here
-    GCS_SEND_TEXT(MAV_SEVERITY_INFO,"Avoidance: Get %d drones", AP::vehicle()->odidscanner.get_count());
-    for(int i = 0;i<AP::vehicle()->odidscanner.get_count();i++) {
-        auto v = AP::vehicle()->odidscanner.get_vehicle(i);
-        uint8_t mac[6];
-        memcpy(mac, v.info.id_or_mac, 6);
-        Vector3f vel;
-        float cog = v.loc.direction;
-        vel[0] = v.loc.speed_horizontal * cosf(radians(cog));
-        vel[1] = v.loc.speed_horizontal * sinf(radians(cog));
-        vel[2] = v.loc.speed_vertical;
-        add_obstacle(v.last_update_ms,
-                    MAV_COLLISION_SRC_ODID,
-                    mac,
-                    AP::vehicle()->odidscanner.get_vehicle_location(i),
-                    vel);
     }
 }
 
