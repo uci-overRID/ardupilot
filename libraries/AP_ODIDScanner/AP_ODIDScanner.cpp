@@ -19,11 +19,9 @@
 #include <GCS_MAVLink/GCS_MAVLink.h>
 #include <AP_Common/Location.h>
 
-#define VEHICLE_TIMEOUT_MS 30000
-
 
 // TODO: Random default for mav_port needs fix
-AP_ODIDScanner::AP_ODIDScanner() : _mav_port(1){
+AP_ODIDScanner::AP_ODIDScanner() : _mav_port(MAVLINK_PORT) {
 
 }
 bool AP_ODIDScanner::enabled() {
@@ -34,7 +32,7 @@ void AP_ODIDScanner::init() {
     _initialised = true;
     _port = AP::serialmanager().get_serial_by_id(_mav_port);
     if (_port != nullptr) {
-        GCS_SEND_TEXT(MAV_SEVERITY_INFO, "Scanner: Found RID Device");
+        GCS_SEND_TEXT(MAV_SEVERITY_INFO, "AP_ODIDScanner: Found RID Device");
         _port->begin(57600, 512, 512);
     }
 }
@@ -57,11 +55,11 @@ void AP_ODIDScanner::handle_msg(mavlink_message_t msg) {
             last_dev_hb_ms = now_ms;
             break;
         }
-case MAVLINK_MSG_ID_OPEN_DRONE_ID_LOCATION:
+        case MAVLINK_MSG_ID_OPEN_DRONE_ID_LOCATION:
         {
             mavlink_open_drone_id_location_t loc;
             mavlink_msg_open_drone_id_location_decode(&msg, &loc);
-            GCS_SEND_TEXT(MAV_SEVERITY_INFO,"Scanner: Found Drone");
+            GCS_SEND_TEXT(MAV_SEVERITY_INFO,"AP_ODIDScanner: Found Drone");
             // Handle the location message.
             if(!update_vehicle(loc)) {
                 add_vehicle(loc);
@@ -82,10 +80,10 @@ case MAVLINK_MSG_ID_OPEN_DRONE_ID_LOCATION:
 }
 void AP_ODIDScanner::update() {
     const uint32_t now_ms = AP_HAL::millis();
-    if (now_ms - last_dev_hb_ms > 5000 && now_ms - last_dev_hb_msg_ms > 5000) {
+    if (now_ms - last_dev_hb_ms > MAX_TIME_SINCE_LAST_HEARTBEAT && now_ms - last_dev_hb_msg_ms > MAX_TIME_SINCE_LAST_HEARTBEAT) {
         last_dev_hb_msg_ms = now_ms;
-        GCS_SEND_TEXT(MAV_SEVERITY_INFO, "Scanner: Device Not Found");
-        _port->printf("Scanner: Where is this printing?");
+        GCS_SEND_TEXT(MAV_SEVERITY_INFO, "AP_ODIDAP_ODIDScanner: Device Not Found");
+        _port->printf("AP_ODIDAP_ODIDScanner: Device Not Found: Where is this printing?");
     }
     if (now_ms - last_hb_send_ms > 1000) {
 

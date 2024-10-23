@@ -21,6 +21,10 @@
     #error ODIDScanner depends on ADSB for Avoidance functionality via AP_Avoidance.
 #endif
 
+#define MAX_TIME_SINCE_LAST_HEARTBEAT 5000
+#define VEHICLE_TIMEOUT_MS 30000
+#define MAVLINK_PORT 1
+
 extern bool mac_eq(uint8_t a[6], uint8_t b[6]); // From AP_Avoidance
 
 struct Loc : Location {
