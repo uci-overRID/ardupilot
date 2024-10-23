@@ -28,6 +28,10 @@
 #include <AP_ADSB/AP_ADSB.h>
 #include <AP_ODIDScanner/AP_ODIDScanner.h>
 
+#if AP_ODIDSCANNER_ENABLED
+extern bool mac_eq(uint8_t a[6], uint8_t b[6]);
+#endif
+
 #if HAL_ADSB_ENABLED
 
 #define AP_AVOIDANCE_STATE_RECOVERY_TIME_MS                 2000    // we will not downgrade state any faster than this (2 seconds)

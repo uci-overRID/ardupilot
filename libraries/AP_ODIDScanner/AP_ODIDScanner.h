@@ -25,7 +25,7 @@
 #define VEHICLE_TIMEOUT_MS 30000
 #define MAVLINK_PORT 1
 
-extern bool mac_eq(uint8_t a[6], uint8_t b[6]); // From AP_Avoidance
+bool mac_eq(uint8_t a[6], uint8_t b[6]);
 
 struct Loc : Location {
 

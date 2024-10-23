@@ -260,15 +260,6 @@ void AP_Avoidance::add_obstacle(const uint32_t obstacle_timestamp_ms,
 }
 
 #if AP_ODIDSCANNER_ENABLED
-bool mac_eq(uint8_t a[6], uint8_t b[6]) {
-    return a[0] == b[0] &&
-           a[1] == b[1] &&
-           a[2] == b[2] &&
-           a[3] == b[3] &&
-           a[4] == b[4] &&
-           a[5] == b[5];
-}
-
 void AP_Avoidance::add_obstacle(uint32_t obstacle_timestamp_ms,
                       const MAV_COLLISION_SRC src,
                       uint8_t src_id[6],
