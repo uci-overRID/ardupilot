@@ -454,11 +454,11 @@ float AP_OABendyRuler::calc_avoidance_margin(const Location &start, const Locati
     if (calc_margin_from_inclusion_and_exclusion_circles(start, end, latest_margin)) {
         margin_min = MIN(margin_min, latest_margin);
     }
-
+#if AP_ODIDSCANNER_ENABLED
     if (calc_margin_from_open_drone_id(start, end, latest_margin)) {
         margin_min = MIN(margin_min, latest_margin);
     }
-
+#endif
     // return smallest margin from any obstacle
     return margin_min;
 }

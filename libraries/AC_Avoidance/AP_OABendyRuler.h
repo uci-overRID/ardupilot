@@ -8,6 +8,7 @@
 #include <AP_Common/Location.h>
 #include <AP_Math/AP_Math.h>
 #include <AP_Logger/AP_Logger_config.h>
+#include <AP_ODIDScanner/AP_ODIDScanner.h>
 
 /*
  * BendyRuler avoidance algorithm for avoiding the polygon and circular fence and dynamic objects detected by the proximity sensor
@@ -71,9 +72,10 @@ private:
     // on success returns true and updates margin
     bool calc_margin_from_object_database(const Location &start, const Location &end, float &margin) const;
 
-    
+#if AP_ODIDSCANNER_ENABLED
     // calculate minimum distance between a path and OpenDroneID sensor obstacles
     bool calc_margin_from_open_drone_id(const Location &start, const Location &end, float &margin) const;
+#endif
     // Logging function
 #if HAL_LOGGING_ENABLED
     void Write_OABendyRuler(const uint8_t type, const bool active, const float target_yaw, const float target_pitch, const bool resist_chg, const float margin, const Location &final_dest, const Location &oa_dest) const;
