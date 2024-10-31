@@ -10,6 +10,7 @@ extern const AP_HAL::HAL& hal;
 #include <AP_Vehicle/AP_Vehicle.h>
 #include <AP_Vehicle/AP_Vehicle_Type.h>
 #include <AP_Logger/AP_Logger.h>
+#include<AP_ODIDScanner/AP_ODIDScanner_utils.h>
 
 #define AVOIDANCE_DEBUGGING 0
 
@@ -342,6 +343,7 @@ void AP_Avoidance::get_adsb_samples()
 
 void AP_Avoidance::get_odid_samples()
 {
+#if AP_ODIDSCANNER_ENABLED
     //TODO: Process samples here
     // GCS_SEND_TEXT(MAV_SEVERITY_INFO,"Avoidance: Get %d drones", AP::vehicle()->odidscanner.get_count());
     for(int i = 0;i<AP::vehicle()->odidscanner.get_count();i++) {
@@ -359,6 +361,7 @@ void AP_Avoidance::get_odid_samples()
                     AP::vehicle()->odidscanner.get_vehicle_location(i),
                     vel);
     }
+#endif
 }
 
 float closest_approach_xy(const Location &my_loc,
@@ -639,9 +642,11 @@ void AP_Avoidance::update()
     if (_adsb.enabled()) {
         get_adsb_samples();
     }
+#if AP_ODIDSCANNER_ENABLED
     if (AP::vehicle()->odidscanner.enabled()) {
         get_odid_samples();
     }
+#endif
 
     check_for_threats();
 

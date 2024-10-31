@@ -266,7 +266,9 @@ void AP_Vehicle::setup()
 #if AP_OPENDRONEID_ENABLED
     opendroneid.init();
 #endif
+#if AP_ODIDSCANNER_ENABLED
     odidscanner.init();
+#endif
 
 // init EFI monitoring
 #if HAL_EFI_ENABLED
@@ -398,7 +400,9 @@ const AP_Scheduler::Task AP_Vehicle::scheduler_tasks[] = {
     SCHED_TASK_CLASS(AP_OpenDroneID, &vehicle.opendroneid,  update,                   10,  50, 236),
 #endif
 // test comment...
+#if AP_ODIDSCANNER_ENABLED
     SCHED_TASK_CLASS(AP_ODIDScanner,&vehicle.odidscanner, update, 10, 50, 237),
+#endif
 #if OSD_ENABLED
     SCHED_TASK(publish_osd_info, 1, 10, 240),
 #endif

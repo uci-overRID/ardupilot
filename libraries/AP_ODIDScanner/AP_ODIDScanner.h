@@ -1,9 +1,15 @@
 
 #pragma once
 
-#include <cstdint>
-#define ODID_SCANNER_ENABLED 1
-#ifdef ODID_SCANNER_ENABLED
+#ifndef AP_ODIDSCANNER_ENABLED
+// default to off. Enabled in hwdef.dat
+#define AP_ODIDSCANNER_ENABLED 0
+#endif
+
+#if AP_ODIDSCANNER_ENABLED
+/*#include <cstdint>*/
+/*#define ODID_SCANNER_ENABLED 1*/
+/*#ifdef ODID_SCANNER_ENABLED*/
 
 #include "AP_Common/AP_Common.h"
 #include <AP_Math/AP_Math.h>
@@ -11,8 +17,8 @@
 #include <GCS_MAVLink/GCS_MAVLink.h>
 #include <GCS_MAVLink/GCS.h>
 #include <AP_Common/Location.h>
+#include "AP_ODIDScanner_utils.h"
 
-extern bool mac_eq(uint8_t a[6], uint8_t b[6]);
 
 
 struct Loc : Location {
@@ -118,7 +124,7 @@ public:
 
     mavlink_uav_found_t found_msg;
     mavlink_channel_t _chan;
-    AP_HAL::UARTDriver* _port;
+    /*AP_HAL::UARTDriver* _port;*/
     bool _initialised;
     uint32_t last_send_ms;
     uint32_t last_dev_hb_ms;
@@ -133,4 +139,4 @@ public:
 };
 
 
-#endif
+#endif // AP_ODIDSCANNER_ENABLED

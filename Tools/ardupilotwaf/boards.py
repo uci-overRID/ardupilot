@@ -104,6 +104,15 @@ class Board:
         else:
             cfg.msg("Enabled OpenDroneID", 'no', color='YELLOW')
 
+        if cfg.options.enable_overrid:
+            env.ENABLE_OVERRID = True
+            env.DEFINES.update(
+                AP_ODIDSCANNER_ENABLED=1,
+            )
+            cfg.msg("Enabled uci-overRID", 'yes')
+        else:
+            cfg.msg("Enabled uci-overRID", 'no', color='YELLOW')
+
         # allow enable of firmware ID checking for any board
         if cfg.options.enable_check_firmware:
             env.CHECK_FIRMWARE_ENABLED = True

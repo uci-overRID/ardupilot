@@ -4016,7 +4016,7 @@ void GCS_MAVLINK::handle_common_message(const mavlink_message_t &msg)
 #endif
         break;
 
-// #if AP_OPENDRONEID_ENABLED
+#if AP_ODIDSCANNER_ENABLED
     case MAVLINK_MSG_ID_OPEN_DRONE_ID_ARM_STATUS:
     case MAVLINK_MSG_ID_OPEN_DRONE_ID_OPERATOR_ID:
     case MAVLINK_MSG_ID_OPEN_DRONE_ID_SELF_ID:
@@ -4032,10 +4032,10 @@ void GCS_MAVLINK::handle_common_message(const mavlink_message_t &msg)
             AP::opendroneid().handle_msg(chan, msg);
         }
         break;
-// #endif
     case MAVLINK_MSG_ID_UAV_FOUND:
         AP::vehicle()->odidscanner.handle_msg(msg);
         break;
+#endif
 
 #if AP_SIGNED_FIRMWARE
     case MAVLINK_MSG_ID_SECURE_COMMAND:

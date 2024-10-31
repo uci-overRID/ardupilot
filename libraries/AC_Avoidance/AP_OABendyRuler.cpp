@@ -451,9 +451,11 @@ float AP_OABendyRuler::calc_avoidance_margin(const Location &start, const Locati
         margin_min = MIN(margin_min, latest_margin);
     }
 
+#if AP_ODIDSCANNER_ENABLED
     if (calc_margin_from_open_drone_id(start, end, latest_margin)) {
         margin_min = MIN(margin_min, latest_margin);
     }
+#endif
 
     // return smallest margin from any obstacle
     return margin_min;
@@ -715,6 +717,7 @@ bool AP_OABendyRuler::calc_margin_from_object_database(const Location &start, co
     return false;
 }
 
+#if AP_ODIDSCANNER_ENABLED
 bool AP_OABendyRuler::calc_margin_from_open_drone_id(const Location &start, const Location &end, float &margin) const {
     AP_ODIDScanner* odid = &AP::vehicle()->odidscanner;
 
@@ -746,3 +749,4 @@ bool AP_OABendyRuler::calc_margin_from_open_drone_id(const Location &start, cons
 
     return false;
 }
+#endif

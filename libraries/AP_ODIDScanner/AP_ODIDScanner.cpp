@@ -1,4 +1,7 @@
 #include "AP_ODIDScanner.h"
+
+#if AP_ODIDSCANNER_ENABLED
+
 #include "GCS_MAVLink/GCS_MAVLink.h"
 #include "GCS_MAVLink/GCS.h"
 #include <AP_HAL/AP_HAL.h>
@@ -18,14 +21,6 @@
 #define VEHICLE_TIMEOUT_MS 30000
 
 
-bool mac_eq(uint8_t a[6], uint8_t b[6]) {
-    return a[0] == b[0] &&
-           a[1] == b[1] &&
-           a[2] == b[2] &&
-           a[3] == b[3] &&
-           a[4] == b[4] &&
-           a[5] == b[5];
-}
 
 // TODO: Random default for mav_port needs fix
 AP_ODIDScanner::AP_ODIDScanner() : _mav_port(1){
@@ -37,11 +32,11 @@ bool AP_ODIDScanner::enabled() {
 void AP_ODIDScanner::init() {
     _chan = mavlink_channel_t(gcs().get_channel_from_port_number(_mav_port));
     _initialised = true;
-    _port = AP::serialmanager().get_serial_by_id(_mav_port);
-    if (_port != nullptr) {
-        GCS_SEND_TEXT(MAV_SEVERITY_INFO, "Scanner: Found RID Device");
-        _port->begin(57600, 512, 512);
-    }
+    /*_port = AP::serialmanager().get_serial_by_id(_mav_port);*/
+    /*if (_port != nullptr) {*/
+    /*    GCS_SEND_TEXT(MAV_SEVERITY_INFO, "Scanner: Found RID Device");*/
+    /*    _port->begin(57600, 512, 512);*/
+    /*}*/
 }
 
 
@@ -92,7 +87,7 @@ void AP_ODIDScanner::update() {
         last_dev_hb_msg_ms = now_ms;
         // GCS_SEND_TEXT(MAV_SEVERITY_INFO, "Scanner: Device Not Found at %f",float(now_ms));
         // this is a bug, the device is working when this is sent....
-        _port->printf("Scanner: Where is this printing?");
+        /*_port->printf("Scanner: Where is this printing?");*/
     }
 
     if (now_ms - last_hb_send_ms > 1000) { // why this?
@@ -252,3 +247,4 @@ Location AP_ODIDScanner::get_vehicle_location(int i) {
     auto v = this->get_vehicle(i);
     return Location(v.loc.latitude, v.loc.longitude, v.loc.altitude_geodetic*100, Location::AltFrame::ABSOLUTE);
 }
+#endif // AP_ODIDSCANNER_ENABLED
