@@ -245,7 +245,7 @@ submodules at specific revisions.
                  help="Enables OpenDroneID")
     g.add_option('--enable-overrid', action='store_true',
                  default=False,
-                 help="Enables OpenDroneID")
+                 help="Enables ODIDScanner")
 
     g.add_option('--enable-check-firmware', action='store_true',
                  default=False,

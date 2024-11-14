@@ -32,6 +32,7 @@ bool AP_ODIDScanner::enabled() {
 void AP_ODIDScanner::init() {
     _chan = mavlink_channel_t(gcs().get_channel_from_port_number(_mav_port));
     _initialised = true;
+    GCS_SEND_TEXT(MAV_SEVERITY_INFO, "initialised odidscanner");
     /*_port = AP::serialmanager().get_serial_by_id(_mav_port);*/
     /*if (_port != nullptr) {*/
     /*    GCS_SEND_TEXT(MAV_SEVERITY_INFO, "Scanner: Found RID Device");*/

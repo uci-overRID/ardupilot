@@ -1,10 +1,9 @@
 
 #pragma once
 
-#ifndef AP_ODIDSCANNER_ENABLED
-// default to off. Enabled in hwdef.dat
-#define AP_ODIDSCANNER_ENABLED 0
-#endif
+#include <AP_HAL/AP_HAL_Boards.h>
+#include "AP_ODIDScanner_config.h"
+
 
 #if AP_ODIDSCANNER_ENABLED
 /*#include <cstdint>*/
