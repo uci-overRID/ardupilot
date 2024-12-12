@@ -7,6 +7,7 @@ extern const AP_HAL::HAL& hal;
 #include <limits>
 #include <AP_AHRS/AP_AHRS.h>
 #include <GCS_MAVLink/GCS.h>
+#include <AP_GPS/AP_GPS.h>
 #include <AP_Vehicle/AP_Vehicle.h>
 #include <AP_Vehicle/AP_Vehicle_Type.h>
 #include <AP_Logger/AP_Logger.h>
@@ -478,6 +479,8 @@ void AP_Avoidance::update_threat_level_ODID(const Location &my_loc,
 
     Location &obstacle_loc = obstacle._location;
     // Vector3f &obstacle_vel = obstacle._velocity;
+    const auto &gps = AP::gps();
+
 
     obstacle.threat_level = MAV_COLLISION_THREAT_LEVEL_NONE;
 
@@ -487,9 +490,24 @@ void AP_Avoidance::update_threat_level_ODID(const Location &my_loc,
 
     // xxx
     double instantaneous_xy = my_loc.get_distance(obstacle_loc); 
-    double instantaneous_z = abs(0.01*(obstacle_loc.alt-my_loc.alt)); 
 
-
+    // BUG FIX START
+    double instantaneous_z = -1000; // default error is -1000, units meter
+    float m_altitude_geodetic = -1000; // geodedict altitude of craft under threat (i.e. this one) in meters
+    int32_t m_alt_amsl_cm; // MSL alt of craft under threat (i.e. this one)
+    float undulation;
+    if (my_loc.get_alt_cm(Location::AltFrame::ABSOLUTE, m_alt_amsl_cm)) {
+        // this alt good
+        m_altitude_geodetic = m_alt_amsl_cm * 0.01;
+        if (gps.get_undulation(undulation)) { // not sure if need gps import for this to work here
+            // Geodetic good
+            m_altitude_geodetic -= undulation;
+            // Now we have m_altitude_geodetic in meters of craft under threat (i.e. this one)
+            instantaneous_z = 0.01*threat->_location.alt-m_altitude_geodetic;  
+        }
+    }
+    
+    // BUG FIX END
 
     if ((instantaneous_xy < _fail_distance_xy) && (instantaneous_z < _fail_distance_z)) {
         obstacle.threat_level = MAV_COLLISION_THREAT_LEVEL_HIGH;
@@ -663,6 +681,8 @@ void AP_Avoidance::handle_avoidance_local(AP_Avoidance::Obstacle *threat)
     MAV_COLLISION_ACTION action = MAV_COLLISION_ACTION_NONE;
     // GCS_SEND_TEXT(MAV_SEVERITY_INFO,"Threat level: %d", new_threat_level);
     AP::logger().Write("ODID", "TimeUS,Threat_level", "Qb", AP_HAL::micros64(), new_threat_level);
+    const auto &gps = AP::gps();
+
 
 
     if (threat != nullptr) {
