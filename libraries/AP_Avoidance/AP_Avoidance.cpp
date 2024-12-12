@@ -682,7 +682,7 @@ void AP_Avoidance::handle_avoidance_local(AP_Avoidance::Obstacle *threat)
             }
 
             double instantaneous_xy = my_loc.get_distance(threat->_location); 
-            double instantaneous_z = -1000; // default error is -1000
+            double instantaneous_z = -1000; // default error is -1000, units meter
                 
             // ************ BUD DESCRIPTION START *************************
 
@@ -702,18 +702,24 @@ void AP_Avoidance::handle_avoidance_local(AP_Avoidance::Obstacle *threat)
             //    }
             // ************ BUD DESCRIPTION END *************************
                 
-            // ************ BUG START *************************
-            int32_t m_ret_alt_cm; // temporary variable to store alt
-            if(my_loc.get_alt_cm(Location::AltFrame::ABOVE_HOME,  m_ret_alt_cm)){
-                // alt location good
-                instantaneous_z = threat->_location.alt-0.01*m_ret_alt_cm;  
+            // ************ BUG FIXED START *************************
+            // Comment: geodetic alt in cm of threat is: threat->_location.alt
+            // First, get geodetic alt of craft
+            float m_altitude_geodetic = -1000; // geodedict altitude of craft under threat (i.e. this one) in meters
+            int32_t m_alt_amsl_cm; // MSL alt of craft under threat (i.e. this one)
+            float undulation;
+            if (my_loc.get_alt_cm(Location::AltFrame::ABSOLUTE, m_alt_amsl_cm)) {
+                // this alt good
+                m_altitude_geodetic = m_alt_amsl_cm * 0.01;
+                if (gps.get_undulation(undulation)) { // not sure if need gps import for this to work here
+                    // Geodetic good
+                    m_altitude_geodetic -= undulation;
+                    // Now we have m_altitude_geodetic in meters of craft under threat (i.e. this one)
+                    instantaneous_z = 0.01*threat->_location.alt-m_altitude_geodetic;  
+                }
             }
-            // ************ BUG END *************************
-            else{
-                // alt location bad
-                instantaneous_z=-1000;
-            }
-
+            // ************ BUG FIXED END *************************
+    
             GCS_SEND_TEXT(MAV_SEVERITY_INFO,"xy:%.0fm,  z:%.0fm", instantaneous_xy, instantaneous_z);
 
             //GCS_SEND_TEXT(MAV_SEVERITY_INFO,"xy: %f,z: %f", threat->closest_approach_xy, threat->closest_approach_z);
