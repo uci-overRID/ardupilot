@@ -494,7 +494,7 @@ void AP_Avoidance::update_threat_level_ODID(const Location &my_loc,
     // BUG FIX START
     double instantaneous_z = -1000; // default error is -1000, units meter
     float m_altitude_geodetic = -1000; // geodedict altitude of craft under threat (i.e. this one) in meters
-    int32_t m_alt_amsl_cm; // MSL alt of craft under threat (i.e. this one)
+    int32_t m_alt_amsl_cm; // MSL alt of craft under obstacle (i.e. this one)
     float undulation;
     if (my_loc.get_alt_cm(Location::AltFrame::ABSOLUTE, m_alt_amsl_cm)) {
         // this alt good
@@ -503,7 +503,7 @@ void AP_Avoidance::update_threat_level_ODID(const Location &my_loc,
             // Geodetic good
             m_altitude_geodetic -= undulation;
             // Now we have m_altitude_geodetic in meters of craft under threat (i.e. this one)
-            instantaneous_z = 0.01*threat->_location.alt-m_altitude_geodetic;  
+            instantaneous_z = 0.01*obstacle->_location.alt-m_altitude_geodetic;  
         }
     }
     
