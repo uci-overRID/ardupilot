@@ -503,7 +503,7 @@ void AP_Avoidance::update_threat_level_ODID(const Location &my_loc,
             // Geodetic good
             m_altitude_geodetic -= undulation;
             // Now we have m_altitude_geodetic in meters of craft under threat (i.e. this one)
-            instantaneous_z = 0.01*obstacle->_location.alt-m_altitude_geodetic;  
+            instantaneous_z = 0.01*obstacle._location.alt-m_altitude_geodetic;  
         }
     }
     
