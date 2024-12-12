@@ -682,14 +682,33 @@ void AP_Avoidance::handle_avoidance_local(AP_Avoidance::Obstacle *threat)
             }
 
             double instantaneous_xy = my_loc.get_distance(threat->_location); 
-            //double instantaneous_z = my_loc.get_alt_distance(threat->_location,instantaneous_xy); 
             double instantaneous_z = -1000; // default error is -1000
-            // = 0.01*(threat->_location.alt-my_loc.alt);  // wrong uses mixed alt definitions
+                
+            // ************ BUD DESCRIPTION START *************************
+
+            // This is the bug in commit 25f0478 on 12/12/2024
+            // It needs to use threat->_location.alt as the geodeitic alt from RID in cm
+            // It needs to use my_loc.get_alt_cm(Location::AltFrame::ABSOLUTE,  m_alt_cm) as the MSL alt in cm
+            // Then it needs to correct the MSL alt in cm with some code.
+
+            // float altitude_geodetic = -1000;
+            // int32_t alt_amsl_cm;
+            // float undulation;
+            // if (current_location.get_alt_cm(Location::AltFrame::ABSOLUTE, alt_amsl_cm)) {
+            //        altitude_geodetic = alt_amsl_cm * 0.01;
+            //}
+            //if (gps.get_undulation(undulation)) {
+            //    altitude_geodetic -= undulation;
+            //    }
+            // ************ BUD DESCRIPTION END *************************
+                
+            // ************ BUG START *************************
             int32_t m_ret_alt_cm; // temporary variable to store alt
             if(my_loc.get_alt_cm(Location::AltFrame::ABOVE_HOME,  m_ret_alt_cm)){
                 // alt location good
                 instantaneous_z = threat->_location.alt-0.01*m_ret_alt_cm;  
             }
+            // ************ BUG END *************************
             else{
                 // alt location bad
                 instantaneous_z=-1000;
