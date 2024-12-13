@@ -509,7 +509,7 @@ void AP_Avoidance::update_threat_level_ODID(const Location &my_loc,
     
     // BUG FIX END
 
-    if ((instantaneous_xy < _fail_distance_xy) && (instantaneous_z < _fail_distance_z)) {
+    if ((instantaneous_xy < _fail_distance_xy) && (abs(instantaneous_z) < _fail_distance_z)) {
         obstacle.threat_level = MAV_COLLISION_THREAT_LEVEL_HIGH;
     } else {
         obstacle.threat_level = MAV_COLLISION_THREAT_LEVEL_LOW;
