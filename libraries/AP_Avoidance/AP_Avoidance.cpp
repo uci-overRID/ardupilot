@@ -741,6 +741,7 @@ void AP_Avoidance::handle_avoidance_local(AP_Avoidance::Obstacle *threat)
             // ************ BUG FIXED END *************************
     
             GCS_SEND_TEXT(MAV_SEVERITY_INFO,"xy:%.0fm,  z:%.0fm", instantaneous_xy, instantaneous_z);
+            AP::logger().Write("ODIA", "TimeUS,xy,z,thL,alt", "Qffif", AP_HAL::micros64(), instantaneous_xy, instantaneous_z, threat->_location.alt, m_altitude_geodetic);
 
             //GCS_SEND_TEXT(MAV_SEVERITY_INFO,"xy: %f,z: %f", threat->closest_approach_xy, threat->closest_approach_z);
 
