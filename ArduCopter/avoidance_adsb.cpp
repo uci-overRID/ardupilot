@@ -1,5 +1,6 @@
 #include "Copter.h"
 #include <AP_Notify/AP_Notify.h>
+#include <AP_GPS/AP_GPS.h>
 
 #if HAL_ADSB_ENABLED
 void Copter::avoidance_adsb_update(void)
@@ -175,12 +176,45 @@ bool AP_Avoidance_Copter::handle_avoidance_vertical(const AP_Avoidance::Obstacle
     if (!check_flightmode(allow_mode_change)) {
         return false;
     }
+    // configure gps
+    const auto &gps = AP::gps();
+
 
     // decide on whether we should climb or descend
-    bool should_climb = false;
+    bool should_climb = false; // default for safety
     Location my_loc;
     if (AP::ahrs().get_location(my_loc)) {
-        should_climb = my_loc.alt > obstacle->_location.alt;
+        // should_climb = my_loc.alt > obstacle->_location.alt; // old code
+        // for RID avoid 12/14/2024 need to use geodetic
+
+        // calculate vehicle geodetic altitude:
+        float m_altitude_geodetic = -1000; // geodedict altitude of craft under threat (i.e. this one) in meters
+        int32_t m_alt_amsl_cm; // MSL alt of craft under threat (i.e. this one)
+        float undulation;
+        if (my_loc.get_alt_cm(Location::AltFrame::ABSOLUTE, m_alt_amsl_cm)) {
+            // this alt good
+            m_altitude_geodetic = m_alt_amsl_cm * 0.01;
+            if (gps.get_undulation(undulation)) { // not sure if need gps import for this to work here
+                // Geodetic good
+                m_altitude_geodetic -= undulation;
+            // Now we have m_altitude_geodetic in meters of craft under threat (i.e. this one)
+            // instantaneous_z = 0.01*obstacle._location.alt-m_altitude_geodetic;  
+            // obstacle->_location.alt is geodedic alt in cm for RID avoid
+            should_climb = m_altitude_geodetic > 0.01*obstacle->_location.alt; // only make true if all checks in if made
+            // i.e. geodedic alt good
+            }
+        }
+
+        
+
+
+
+
+
+
+
+
+        
     }
 
     // get best vector away from obstacle
