@@ -737,7 +737,7 @@ void AP_Avoidance::handle_avoidance_local(AP_Avoidance::Obstacle *threat)
                     m_altitude_geodetic -= undulation;
                     // Now we have m_altitude_geodetic in meters of craft under threat (i.e. this one)
                     //instantaneous_z = 0.01*threat->_location.alt-m_altitude_geodetic;
-                    instantaneous_z = m_altitude_geodetic- 0.01*threat._location.alt;  // altitude of drone over threat now
+                    instantaneous_z = m_altitude_geodetic- 0.01*threat->_location.alt;  // altitude of drone over threat now
                 }
             }
             // ************ BUG FIXED END *************************
