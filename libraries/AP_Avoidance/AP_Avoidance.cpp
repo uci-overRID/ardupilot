@@ -503,7 +503,8 @@ void AP_Avoidance::update_threat_level_ODID(const Location &my_loc,
             // Geodetic good
             m_altitude_geodetic -= undulation;
             // Now we have m_altitude_geodetic in meters of craft under threat (i.e. this one)
-            instantaneous_z = 0.01*obstacle._location.alt-m_altitude_geodetic;  
+            // instantaneous_z = 0.01*obstacle._location.alt-m_altitude_geodetic;  
+            instantaneous_z = m_altitude_geodetic- 0.01*obstacle._location.alt;  // altitude of drone over threat now
         }
     }
     
@@ -735,14 +736,15 @@ void AP_Avoidance::handle_avoidance_local(AP_Avoidance::Obstacle *threat)
                     // Geodetic good
                     m_altitude_geodetic -= undulation;
                     // Now we have m_altitude_geodetic in meters of craft under threat (i.e. this one)
-                    instantaneous_z = 0.01*threat->_location.alt-m_altitude_geodetic;  
+                    //instantaneous_z = 0.01*threat->_location.alt-m_altitude_geodetic;
+                    instantaneous_z = m_altitude_geodetic- 0.01*threat._location.alt;  // altitude of drone over threat now
                 }
             }
             // ************ BUG FIXED END *************************
     
             GCS_SEND_TEXT(MAV_SEVERITY_INFO,"xy:%.0fm,  z:%.0fm", instantaneous_xy, instantaneous_z);
-            AP::logger().Write("ODIA", "TimeUS,xy,z,thL,alt", "Qffif", AP_HAL::micros64(), instantaneous_xy, instantaneous_z, threat->_location.alt, m_altitude_geodetic);
-
+            // AP::logger().Write("ODIA", "TimeUS,xy,z,thL,alt", "Qffif", AP_HAL::micros64(), instantaneous_xy, instantaneous_z, threat->_location.alt, m_altitude_geodetic);
+            // log message makes bin logs too big for flash memory, commented out, it was only for diagnostics
             //GCS_SEND_TEXT(MAV_SEVERITY_INFO,"xy: %f,z: %f", threat->closest_approach_xy, threat->closest_approach_z);
 
             }
